@@ -1,0 +1,15 @@
+{
+    "name": "jankx/mya-account",
+    "autoload": {
+        "psr-4": {
+            "Jankx\\Extensions\\MyAccount\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Puleeno Nguyen",
+            "email": "puleeno@gmail.com"
+        }
+    ],
+    "require": {}
+}

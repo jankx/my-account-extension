@@ -1,0 +1,17 @@
+{
+    "name": "My Account",
+    "version": "1.0.0",
+    "description": "Trang tài khoản người dùng cho hệ thống đặt tour Nobitour.",
+    "author": "Jankx",
+    "extension_id": "my-account",
+    "context": ["frontend", "admin"],
+    "caller": {
+        "file": "MyAccountExtension.php",
+        "class": "Jankx\\Extensions\\MyAccount\\MyAccountExtension",
+        "method": "init"
+    },
+    "requirements": {
+        "php": ">=7.4"
+    },
+    "auto_activate": true
+}

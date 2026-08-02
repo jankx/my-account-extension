@@ -1,0 +1,651 @@
+/* Nobitour My Account - Frontend Styles */
+
+:root {
+    --jankx-primary: #65A30D;
+    --jankx-primary-dark: #55890B;
+    --jankx-navy: #1A1F71;
+    --jankx-cream: #FFFEF5;
+    --jankx-success: #16A34A;
+    --jankx-warning: #F59E0B;
+    --jankx-danger: #DC2626;
+    --jankx-info: #2563EB;
+    --jankx-gray-50: #F9FAFB;
+    --jankx-gray-100: #F3F4F6;
+    --jankx-gray-200: #E5E7EB;
+    --jankx-gray-300: #D1D5DB;
+    --jankx-gray-400: #9CA3AF;
+    --jankx-gray-500: #6B7280;
+    --jankx-gray-600: #4B5563;
+    --jankx-gray-700: #374151;
+    --jankx-gray-800: #1F2937;
+    --jankx-gray-900: #111827;
+    --jankx-radius: 12px;
+    --jankx-radius-sm: 8px;
+    --jankx-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --jankx-shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+    --jankx-shadow-lg: 0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.04);
+}
+
+/* Login Prompt */
+.jankx-account-login-prompt {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: var(--jankx-radius);
+    box-shadow: var(--jankx-shadow);
+}
+
+.jankx-account-login-icon {
+    margin-bottom: 20px;
+}
+
+.jankx-account-login-prompt h2 {
+    color: var(--jankx-navy);
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.jankx-account-login-prompt p {
+    color: var(--jankx-gray-500);
+    margin-bottom: 24px;
+}
+
+/* Buttons */
+.jankx-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--jankx-radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1.5;
+}
+
+.jankx-btn-primary {
+    background: var(--jankx-primary);
+    color: #fff;
+}
+
+.jankx-btn-primary:hover {
+    background: var(--jankx-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(101, 163, 13, 0.3);
+    color: #fff;
+}
+
+.jankx-btn-outline {
+    background: transparent;
+    color: var(--jankx-primary);
+    border: 2px solid var(--jankx-primary);
+}
+
+.jankx-btn-outline:hover {
+    background: var(--jankx-primary);
+    color: #fff;
+}
+
+.jankx-btn-danger {
+    background: var(--jankx-danger);
+    color: #fff;
+}
+
+.jankx-btn-danger:hover {
+    background: #B91C1C;
+}
+
+.jankx-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* My Account Wrapper */
+.jankx-my-account {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--jankx-gray-800);
+    line-height: 1.6;
+}
+
+/* Header */
+.jankx-account-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 32px;
+    background: #fff;
+    border-radius: var(--jankx-radius);
+    box-shadow: var(--jankx-shadow);
+    margin-bottom: 24px;
+}
+
+.jankx-account-avatar {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.jankx-avatar-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--jankx-cream);
+    box-shadow: var(--jankx-shadow-md);
+}
+
+.jankx-avatar-change {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--jankx-primary);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.jankx-account-avatar:hover .jankx-avatar-change {
+    opacity: 1;
+}
+
+.jankx-avatar-change:hover {
+    background: var(--jankx-primary-dark);
+}
+
+.jankx-account-info {
+    flex: 1;
+}
+
+.jankx-account-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--jankx-navy);
+    margin: 0 0 4px 0;
+}
+
+.jankx-account-email {
+    color: var(--jankx-gray-500);
+    margin: 0 0 4px 0;
+    font-size: 14px;
+}
+
+.jankx-account-member {
+    color: var(--jankx-gray-400);
+    margin: 0;
+    font-size: 13px;
+}
+
+/* Navigation Tabs */
+.jankx-account-nav {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    padding: 8px;
+    border-radius: var(--jankx-radius);
+    box-shadow: var(--jankx-shadow);
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.jankx-nav-tab {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--jankx-gray-600);
+    text-decoration: none;
+    border-radius: var(--jankx-radius-sm);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.jankx-nav-tab:hover {
+    background: var(--jankx-gray-100);
+    color: var(--jankx-navy);
+}
+
+.jankx-nav-tab-active {
+    background: var(--jankx-primary);
+    color: #fff;
+}
+
+.jankx-nav-tab-active:hover {
+    background: var(--jankx-primary-dark);
+    color: #fff;
+}
+
+/* Content Area */
+.jankx-account-content {
+    background: #fff;
+    border-radius: var(--jankx-radius);
+    box-shadow: var(--jankx-shadow);
+    padding: 32px;
+}
+
+/* Section Title */
+.jankx-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--jankx-navy);
+    margin: 0 0 24px 0;
+}
+
+/* Forms */
+.jankx-form {
+    max-width: 100%;
+}
+
+.jankx-form-group {
+    margin-bottom: 20px;
+}
+
+.jankx-form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--jankx-gray-700);
+    margin-bottom: 6px;
+}
+
+.jankx-form-group input,
+.jankx-form-group select,
+.jankx-form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border: 1px solid var(--jankx-gray-300);
+    border-radius: var(--jankx-radius-sm);
+    background: #fff;
+    color: var(--jankx-gray-800);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.jankx-form-group input:focus,
+.jankx-form-group select:focus,
+.jankx-form-group textarea:focus {
+    border-color: var(--jankx-primary);
+    box-shadow: 0 0 0 3px rgba(101, 163, 13, 0.15);
+    outline: none;
+}
+
+.jankx-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.jankx-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.jankx-form-status {
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.jankx-form-status.jankx-status-success {
+    color: var(--jankx-success);
+}
+
+.jankx-form-status.jankx-status-error {
+    color: var(--jankx-danger);
+}
+
+.jankx-form-status.jankx-status-loading {
+    color: var(--jankx-gray-500);
+}
+
+/* Checkbox */
+.jankx-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--jankx-gray-700);
+    border-bottom: 1px solid var(--jankx-gray-100);
+}
+
+.jankx-checkbox:last-child {
+    border-bottom: none;
+}
+
+.jankx-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--jankx-primary);
+    cursor: pointer;
+}
+
+/* Divider */
+.jankx-divider {
+    height: 1px;
+    background: var(--jankx-gray-200);
+    margin: 32px 0;
+}
+
+/* Table */
+.jankx-table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.jankx-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.jankx-table th {
+    background: var(--jankx-gray-50);
+    color: var(--jankx-gray-600);
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--jankx-gray-200);
+    white-space: nowrap;
+}
+
+.jankx-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--jankx-gray-100);
+    vertical-align: middle;
+}
+
+.jankx-table tbody tr:hover {
+    background: var(--jankx-gray-50);
+}
+
+.jankx-tour-link {
+    color: var(--jankx-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.jankx-tour-link:hover {
+    text-decoration: underline;
+}
+
+.jankx-price {
+    color: var(--jankx-navy);
+    font-weight: 600;
+}
+
+/* Badges */
+.jankx-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.jankx-badge-success {
+    background: rgba(22, 163, 74, 0.1);
+    color: var(--jankx-success);
+}
+
+.jankx-badge-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--jankx-warning);
+}
+
+.jankx-badge-danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--jankx-danger);
+}
+
+.jankx-badge-info {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--jankx-info);
+}
+
+.jankx-badge-secondary {
+    background: var(--jankx-gray-100);
+    color: var(--jankx-gray-600);
+}
+
+/* Empty State */
+.jankx-empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--jankx-gray-500);
+}
+
+.jankx-empty-state svg {
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.jankx-empty-state p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Credit Card */
+.jankx-credit-card {
+    background: linear-gradient(135deg, var(--jankx-navy) 0%, #2D3580 100%);
+    color: #fff;
+    padding: 32px;
+    border-radius: var(--jankx-radius);
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.jankx-credit-label {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 8px;
+}
+
+.jankx-credit-amount {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+/* Coupon Grid */
+.jankx-coupon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.jankx-coupon-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: var(--jankx-cream);
+    border: 2px dashed var(--jankx-primary);
+    border-radius: var(--jankx-radius);
+    transition: all 0.2s ease;
+}
+
+.jankx-coupon-item:hover {
+    box-shadow: var(--jankx-shadow-md);
+}
+
+.jankx-coupon-expired {
+    opacity: 0.5;
+    border-color: var(--jankx-gray-300);
+    background: var(--jankx-gray-100);
+}
+
+.jankx-coupon-badge {
+    background: var(--jankx-primary);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: var(--jankx-radius-sm);
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: center;
+}
+
+.jankx-coupon-expired .jankx-coupon-badge {
+    background: var(--jankx-gray-400);
+}
+
+.jankx-coupon-info {
+    flex: 1;
+}
+
+.jankx-coupon-code {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--jankx-navy);
+    margin-bottom: 4px;
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.jankx-coupon-desc {
+    font-size: 13px;
+    color: var(--jankx-gray-500);
+    margin-bottom: 8px;
+}
+
+.jankx-coupon-expiry {
+    font-size: 12px;
+    color: var(--jankx-gray-400);
+}
+
+/* Settings Section */
+.jankx-settings-section {
+    margin-bottom: 8px;
+}
+
+.jankx-settings-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--jankx-navy);
+    margin: 0 0 16px 0;
+}
+
+.jankx-settings-section p {
+    font-size: 14px;
+    color: var(--jankx-gray-500);
+    margin: 0 0 16px 0;
+}
+
+/* Text Helpers */
+.text-muted {
+    color: var(--jankx-gray-400);
+}
+
+.text-success {
+    color: var(--jankx-success);
+}
+
+.text-danger {
+    color: var(--jankx-danger);
+}
+
+/* Hidden file input */
+.jankx-avatar-upload-input {
+    display: none;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .jankx-account-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .jankx-avatar-img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .jankx-account-name {
+        font-size: 20px;
+    }
+
+    .jankx-account-nav {
+        padding: 4px;
+        margin-bottom: 16px;
+    }
+
+    .jankx-nav-tab {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+
+    .jankx-account-content {
+        padding: 20px;
+    }
+
+    .jankx-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .jankx-coupon-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .jankx-table {
+        font-size: 13px;
+    }
+
+    .jankx-table th,
+    .jankx-table td {
+        padding: 10px 12px;
+    }
+
+    .jankx-credit-amount {
+        font-size: 32px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .jankx-account-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 2px;
+    }
+
+    .jankx-nav-tab {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .jankx-form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .jankx-form-actions .jankx-btn {
+        width: 100%;
+    }
+
+    .jankx-form-status {
+        text-align: center;
+    }
+}
