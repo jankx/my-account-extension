@@ -11,5 +11,8 @@
             "email": "puleeno@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "config": {
+        "vendor-dir": "libs"
+    }
 }
