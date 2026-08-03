@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "jankx/my-account",
+    "title": "My Account",
+    "category": "jankx",
+    "icon": "admin-users",
+    "description": "Container block for the My Account page with sidebar and content areas.",
+    "textdomain": "jankx",
+    "attributes": {
+        "showSidebar": {
+            "type": "boolean",
+            "default": true
+        },
+        "layout": {
+            "type": "string",
+            "default": "sidebar-content",
+            "enum": ["sidebar-content", "content-sidebar", "stacked"]
+        }
+    },
+    "supports": {
+        "html": false,
+        "align": ["wide", "full"],
+        "spacing": {
+            "margin": true,
+            "padding": true,
+            "blockGap": true,
+            "__experimentalDefaultControls": {
+                "margin": true,
+                "padding": true
+            }
+        },
+        "color": {
+            "text": true,
+            "background": true,
+            "__experimentalDefaultControls": {
+                "text": true,
+                "background": true
+            }
+        }
+    },
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/editor.css",
+    "style": "file:./build/style.css"
+}

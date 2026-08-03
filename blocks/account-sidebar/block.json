@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "jankx/account-sidebar",
+    "title": "Account Sidebar",
+    "category": "jankx",
+    "icon": "layout",
+    "description": "Sidebar section displaying user info and membership badge.",
+    "textdomain": "jankx",
+    "parent": ["jankx/my-account"],
+    "attributes": {
+        "showAvatar": {
+            "type": "boolean",
+            "default": true
+        },
+        "showName": {
+            "type": "boolean",
+            "default": true
+        },
+        "showMembershipBadge": {
+            "type": "boolean",
+            "default": true
+        },
+        "showEditLink": {
+            "type": "boolean",
+            "default": true
+        }
+    },
+    "supports": {
+        "html": false,
+        "spacing": {
+            "padding": true,
+            "margin": true
+        },
+        "color": {
+            "text": true,
+            "background": true
+        }
+    },
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/editor.css",
+    "style": "file:./build/style.css"
+}

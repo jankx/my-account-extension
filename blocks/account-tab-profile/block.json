@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "jankx/account-tab-profile",
+    "title": "Profile Tab",
+    "category": "jankx",
+    "icon": "admin-users",
+    "description": "User profile information and password change form.",
+    "textdomain": "jankx",
+    "parent": ["jankx/my-account"],
+    "attributes": {},
+    "supports": {
+        "html": false,
+        "spacing": {
+            "padding": true,
+            "margin": true
+        }
+    },
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/editor.css",
+    "style": "file:./build/style.css"
+}

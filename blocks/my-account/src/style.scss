@@ -1,0 +1,48 @@
+.jankx-my-account-block {
+    .jankx-account-inner {
+        display: grid;
+        gap: 24px;
+
+        &.layout-sidebar-content {
+            grid-template-columns: 280px 1fr;
+        }
+
+        &.layout-content-sidebar {
+            grid-template-columns: 1fr 280px;
+        }
+
+        &.layout-stacked {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .jankx-account-inner {
+            grid-template-columns: 1fr !important;
+        }
+    }
+}
+
+.jankx-logged-out {
+    .jankx-login-prompt {
+        text-align: center;
+        padding: 60px 20px;
+        max-width: 400px;
+        margin: 0 auto;
+
+        .jankx-login-icon {
+            margin-bottom: 20px;
+            color: var(--wp--preset--color--primary, #65A30D);
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 24px;
+        }
+
+        p {
+            margin: 0 0 24px;
+            color: #666;
+        }
+    }
+}

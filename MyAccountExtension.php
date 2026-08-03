@@ -115,6 +115,9 @@ class MyAccountExtension extends AbstractExtension
         if (is_admin()) {
             $settingsPage = new \Jankx\Extensions\MyAccount\Admin\SettingsPage();
             $settingsPage->register();
+
+            // Register Gutenberg blocks
+            add_action('init', [$this, 'registerBlocks']);
         }
 
         // Fire action so other extensions can register their sub-pages
@@ -125,6 +128,39 @@ class MyAccountExtension extends AbstractExtension
 
         // Inject My Account sub-pages into User Menu block dropdown
         add_filter('jankx/user_menu/items', [$this, 'addMyAccountMenuItems'], 20, 2);
+    }
+
+    /**
+     * Register Gutenberg blocks for this extension
+     */
+    public function registerBlocks(): void
+    {
+        $blocksDir = __DIR__ . '/blocks';
+        if (!is_dir($blocksDir)) {
+            return;
+        }
+
+        $blockClasses = [
+            'my-account' => \Jankx\Extensions\MyAccount\Blocks\MyAccountBlock::class,
+            'account-sidebar' => \Jankx\Extensions\MyAccount\Blocks\AccountSidebarBlock::class,
+            'account-nav' => \Jankx\Extensions\MyAccount\Blocks\AccountNavBlock::class,
+            'account-tab-profile' => \Jankx\Extensions\MyAccount\Blocks\AccountTabProfileBlock::class,
+            'account-tab-orders' => \Jankx\Extensions\MyAccount\Blocks\AccountTabOrdersBlock::class,
+            'account-tab-coupons' => \Jankx\Extensions\MyAccount\Blocks\AccountTabCouponsBlock::class,
+            'account-tab-credits' => \Jankx\Extensions\MyAccount\Blocks\AccountTabCreditsBlock::class,
+        ];
+
+        foreach ($blockClasses as $blockName => $blockClass) {
+            $blockPath = $blocksDir . '/' . $blockName;
+            if (!is_dir($blockPath)) {
+                continue;
+            }
+
+            $block = new $blockClass($blockPath);
+            $block->setBlockPath($blockPath);
+            $block->boot();
+            $block->register();
+        }
     }
 
     /**
@@ -293,7 +329,7 @@ class MyAccountExtension extends AbstractExtension
         }
 
         $pageData = [
-            'post_title'   => __('Tài khoản của tôi', 'jankx'),
+            'post_title'   => __('My Account', 'jankx'),
             'post_content' => '[jankx_my_account]',
             'post_status'  => 'publish',
             'post_type'    => 'page',
@@ -341,11 +377,11 @@ class MyAccountExtension extends AbstractExtension
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('jankx_my_account_nonce'),
             'i18n' => [
-                'saving' => 'Đang lưu...',
-                'saved' => 'Đã lưu thành công!',
-                'error' => 'Có lỗi xảy ra, vui lòng thử lại.',
-                'confirmDelete' => 'Bạn có chắc chắn muốn xóa?',
-                'uploading' => 'Đang tải lên...',
+                'saving' => 'Saving...',
+                'saved' => 'Saved successfully!',
+                'error' => 'An error occurred. Please try again.',
+                'confirmDelete' => 'Are you sure you want to delete?',
+                'uploading' => 'Uploading...',
             ],
         ]);
     }
@@ -355,7 +391,7 @@ class MyAccountExtension extends AbstractExtension
         check_ajax_referer('jankx_my_account_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
-            wp_send_json_error(['message' => 'Vui lòng đăng nhập.']);
+            wp_send_json_error(['message' => 'Please login.']);
         }
 
         $userId = get_current_user_id();
@@ -364,15 +400,15 @@ class MyAccountExtension extends AbstractExtension
         $phone = sanitize_text_field($_POST['phone'] ?? '');
 
         if (empty($displayName)) {
-            wp_send_json_error(['message' => 'Họ tên không được để trống.']);
+            wp_send_json_error(['message' => 'Name cannot be empty.']);
         }
 
         if (empty($email) || !is_email($email)) {
-            wp_send_json_error(['message' => 'Email không hợp lệ.']);
+            wp_send_json_error(['message' => 'Invalid email address.']);
         }
 
         if (email_exists($email) && $email !== get_userdata($userId)->user_email) {
-            wp_send_json_error(['message' => 'Email đã được sử dụng bởi tài khoản khác.']);
+            wp_send_json_error(['message' => 'Email is already in use by another account.']);
         }
 
         $userData = [
@@ -384,12 +420,12 @@ class MyAccountExtension extends AbstractExtension
         $result = wp_update_user($userData);
 
         if (is_wp_error($result)) {
-            wp_send_json_error(['message' => 'Có lỗi xảy ra khi cập nhật hồ sơ.']);
+            wp_send_json_error(['message' => 'Error updating profile.']);
         }
 
         update_user_meta($userId, 'phone', $phone);
 
-        wp_send_json_success(['message' => 'Cập nhật hồ sơ thành công!']);
+        wp_send_json_success(['message' => 'Profile updated successfully!']);
     }
 
     public function ajaxUploadAvatar(): void
@@ -397,22 +433,22 @@ class MyAccountExtension extends AbstractExtension
         check_ajax_referer('jankx_my_account_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
-            wp_send_json_error(['message' => 'Vui lòng đăng nhập.']);
+            wp_send_json_error(['message' => 'Please login.']);
         }
 
         if (!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
-            wp_send_json_error(['message' => 'Vui lòng chọn file ảnh.']);
+            wp_send_json_error(['message' => 'Please select an image file.']);
         }
 
         $file = $_FILES['avatar'];
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
         if (!in_array($file['type'], $allowedTypes)) {
-            wp_send_json_error(['message' => 'Chỉ chấp nhận file JPG, PNG, GIF hoặc WebP.']);
+            wp_send_json_error(['message' => 'Only JPG, PNG, GIF or WebP files are accepted.']);
         }
 
         if ($file['size'] > 5 * 1024 * 1024) {
-            wp_send_json_error(['message' => 'Kích thước file không được vượt quá 5MB.']);
+            wp_send_json_error(['message' => 'File size cannot exceed 5MB.']);
         }
 
         require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -422,7 +458,7 @@ class MyAccountExtension extends AbstractExtension
         $attachId = media_handle_upload('avatar', 0);
 
         if (is_wp_error($attachId)) {
-            wp_send_json_error(['message' => 'Tải ảnh lên thất bại.']);
+            wp_send_json_error(['message' => 'Failed to upload image.']);
         }
 
         $userId = get_current_user_id();
@@ -430,7 +466,7 @@ class MyAccountExtension extends AbstractExtension
         update_user_meta($userId, 'jankx_avatar_url', wp_get_attachment_url($attachId));
 
         wp_send_json_success([
-            'message' => 'Cập nhật ảnh đại diện thành công!',
+            'message' => 'Avatar updated successfully!',
             'url' => wp_get_attachment_image_url($attachId, 'thumbnail'),
         ]);
     }
@@ -440,7 +476,7 @@ class MyAccountExtension extends AbstractExtension
         check_ajax_referer('jankx_my_account_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
-            wp_send_json_error(['message' => 'Vui lòng đăng nhập.']);
+            wp_send_json_error(['message' => 'Please login.']);
         }
 
         $currentPassword = $_POST['current_password'] ?? '';
@@ -448,24 +484,24 @@ class MyAccountExtension extends AbstractExtension
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
         if (empty($currentPassword)) {
-            wp_send_json_error(['message' => 'Vui lòng nhập mật khẩu hiện tại.']);
+            wp_send_json_error(['message' => 'Please enter your current password.']);
         }
 
         $user = wp_get_current_user();
         if (!wp_check_password($currentPassword, $user->data->user_pass, $user->ID)) {
-            wp_send_json_error(['message' => 'Mật khẩu hiện tại không đúng.']);
+            wp_send_json_error(['message' => 'Current password is incorrect.']);
         }
 
         if (strlen($newPassword) < 8) {
-            wp_send_json_error(['message' => 'Mật khẩu mới phải có ít nhất 8 ký tự.']);
+            wp_send_json_error(['message' => 'New password must be at least 8 characters.']);
         }
 
         if ($newPassword !== $confirmPassword) {
-            wp_send_json_error(['message' => 'Mật khẩu xác nhận không khớp.']);
+            wp_send_json_error(['message' => 'New passwords do not match.']);
         }
 
         wp_set_password($newPassword, $user->ID);
 
-        wp_send_json_success(['message' => 'Đổi mật khẩu thành công!']);
+        wp_send_json_success(['message' => 'Password changed successfully!']);
     }
 }
