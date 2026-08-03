@@ -148,9 +148,6 @@ class MyAccountExtension extends AbstractExtension
             'account-sidebar' => \Jankx\Extensions\MyAccount\Blocks\AccountSidebarBlock::class,
             'account-nav' => \Jankx\Extensions\MyAccount\Blocks\AccountNavBlock::class,
             'account-tab-profile' => \Jankx\Extensions\MyAccount\Blocks\AccountTabProfileBlock::class,
-            'account-tab-orders' => \Jankx\Extensions\MyAccount\Blocks\AccountTabOrdersBlock::class,
-            'account-tab-coupons' => \Jankx\Extensions\MyAccount\Blocks\AccountTabCouponsBlock::class,
-            'account-tab-credits' => \Jankx\Extensions\MyAccount\Blocks\AccountTabCreditsBlock::class,
         ];
 
         foreach ($blockClasses as $blockName => $blockClass) {
