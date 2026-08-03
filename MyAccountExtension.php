@@ -43,9 +43,6 @@ class MyAccountExtension extends AbstractExtension
             'priority' => 10,
             'callback' => [new \Jankx\Extensions\MyAccount\Shortcode\MyAccountShortcode(), 'renderProfileTab'],
         ]);
-
-        // Fire action so other extensions can register their sub-pages
-        do_action('jankx/my_account/register_sub_pages');
     }
 
     public static function get_instance(): ?self
@@ -119,6 +116,12 @@ class MyAccountExtension extends AbstractExtension
             $settingsPage = new \Jankx\Extensions\MyAccount\Admin\SettingsPage();
             $settingsPage->register();
         }
+
+        // Fire action so other extensions can register their sub-pages
+        // This must run after all extensions have registered their hooks
+        add_action('init', function() {
+            do_action('jankx/my_account/register_sub_pages');
+        }, 99);
     }
 
     /**

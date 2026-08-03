@@ -594,7 +594,14 @@ class MyAccountShortcode
 
     protected function isExtensionActive(string $extensionSlug): bool
     {
-        $activeExtensions = get_option('jankx_active_extensions', []);
-        return in_array($extensionSlug, $activeExtensions);
+        try {
+            $extensionManager = \Jankx\Facades\App::make('extension.manager');
+            if ($extensionManager && method_exists($extensionManager, 'is_extension_active')) {
+                return $extensionManager->is_extension_active($extensionSlug);
+            }
+        } catch (\Exception $e) {
+            // Fallback
+        }
+        return false;
     }
 }
