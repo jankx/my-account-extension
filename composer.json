@@ -1,5 +1,5 @@
 {
-    "name": "jankx/mya-account",
+    "name": "jankx/my-account",
     "autoload": {
         "psr-4": {
             "Jankx\\Extensions\\MyAccount\\": "src/"
@@ -11,8 +11,5 @@
             "email": "puleeno@gmail.com"
         }
     ],
-    "require": {},
-    "config": {
-        "vendor-dir": "libs"
-    }
+    "require": {}
 }

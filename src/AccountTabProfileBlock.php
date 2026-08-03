@@ -5,9 +5,7 @@
  * @package Jankx\Gutenberg\Blocks
  */
 
-namespace Jankx\Extensions\MyAccount\Blocks;
-
-use Jankx\Extensions\MyAccount\Block;
+namespace Jankx\Extensions\MyAccount;
 
 class AccountTabProfileBlock extends Block
 {

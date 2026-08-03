@@ -9,29 +9,6 @@ class MyAccountExtension extends AbstractExtension
 
     protected static $subPages = [];
 
-    public function __construct()
-    {
-        $this->register_autoloader();
-        parent::__construct();
-    }
-
-    protected function register_autoloader()
-    {
-        spl_autoload_register(function ($class) {
-            $prefix = 'Jankx\\Extensions\\MyAccount\\';
-            $base_dir = __DIR__ . '/src/';
-            $len = strlen($prefix);
-            if (strncmp($prefix, $class, $len) !== 0) {
-                return;
-            }
-            $relative_class = substr($class, $len);
-            $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-            if (file_exists($file)) {
-                require $file;
-            }
-        });
-    }
-
     public function init(): void
     {
         self::$instance = $this;
@@ -125,7 +102,7 @@ class MyAccountExtension extends AbstractExtension
 
         // Fire action so other extensions can register their sub-pages
         // This must run after all extensions have registered their hooks
-        add_action('init', function() {
+        add_action('init', function () {
             do_action('jankx/my_account/register_sub_pages');
         }, 99);
 
@@ -144,10 +121,10 @@ class MyAccountExtension extends AbstractExtension
         }
 
         $blockClasses = [
-            'my-account' => \Jankx\Extensions\MyAccount\Blocks\MyAccountBlock::class,
-            'account-sidebar' => \Jankx\Extensions\MyAccount\Blocks\AccountSidebarBlock::class,
-            'account-nav' => \Jankx\Extensions\MyAccount\Blocks\AccountNavBlock::class,
-            'account-tab-profile' => \Jankx\Extensions\MyAccount\Blocks\AccountTabProfileBlock::class,
+            'my-account' => \Jankx\Extensions\MyAccount\MyAccountBlock::class,
+            'account-sidebar' => \Jankx\Extensions\MyAccount\AccountSidebarBlock::class,
+            'account-nav' => \Jankx\Extensions\MyAccount\AccountNavBlock::class,
+            'account-tab-profile' => \Jankx\Extensions\MyAccount\AccountTabProfileBlock::class,
         ];
 
         foreach ($blockClasses as $blockName => $blockClass) {
@@ -261,7 +238,8 @@ class MyAccountExtension extends AbstractExtension
             if ($extensionManager && method_exists($extensionManager, 'is_extension_active')) {
                 return $extensionManager->is_extension_active($extensionSlug);
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
         return false;
     }
 
@@ -371,11 +349,11 @@ class MyAccountExtension extends AbstractExtension
         }
 
         $pageData = [
-            'post_title'   => __('My Account', 'jankx'),
+            'post_title' => __('My Account', 'jankx'),
             'post_content' => '[jankx_my_account]',
-            'post_status'  => 'publish',
-            'post_type'    => 'page',
-            'post_author'  => get_current_user_id(),
+            'post_status' => 'publish',
+            'post_type' => 'page',
+            'post_author' => get_current_user_id(),
         ];
 
         $pageId = wp_insert_post($pageData);

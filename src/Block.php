@@ -50,7 +50,7 @@ abstract class Block
 
     protected function resolveBlockPath(): string
     {
-        $blocksDir = dirname(__DIR__, 2) . '/blocks/' . basename($this->blockId);
+        $blocksDir = dirname(__DIR__) . '/blocks/' . basename($this->blockId);
         if (is_dir($blocksDir)) {
             return $blocksDir;
         }
