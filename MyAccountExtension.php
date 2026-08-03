@@ -116,8 +116,11 @@ class MyAccountExtension extends AbstractExtension
             $settingsPage = new \Jankx\Extensions\MyAccount\Admin\SettingsPage();
             $settingsPage->register();
 
-            // Register Gutenberg blocks
+            // Register Gutenberg blocks in admin (for block inserter)
             add_action('init', [$this, 'registerBlocks']);
+        } else {
+            // Frontend: only register blocks on My Account page
+            add_action('template_redirect', [$this, 'maybeRegisterFrontendBlocks']);
         }
 
         // Fire action so other extensions can register their sub-pages
@@ -161,6 +164,48 @@ class MyAccountExtension extends AbstractExtension
             $block->boot();
             $block->register();
         }
+    }
+
+    /**
+     * Check if current page is My Account page and register blocks if so
+     */
+    public function maybeRegisterFrontendBlocks(): void
+    {
+        if (!$this->isMyAccountPage()) {
+            return;
+        }
+
+        $this->registerBlocks();
+    }
+
+    /**
+     * Check if current page is My Account page or a sub-page
+     */
+    protected function isMyAccountPage(): bool
+    {
+        $pageId = get_option('jankx_my_account_page_id', 0);
+        if (!$pageId) {
+            return false;
+        }
+
+        // Check if current page is the My Account page
+        if (is_page($pageId)) {
+            return true;
+        }
+
+        // Check if current page is a sub-page (e.g., /my-account/profile/)
+        $subPage = get_query_var('jankx_account_page');
+        if (!empty($subPage) && self::isValidSubPage($subPage)) {
+            return true;
+        }
+
+        // Check if we're on a page with the my-account shortcode
+        global $post;
+        if ($post && has_shortcode($post->post_content, 'jankx_my_account')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
