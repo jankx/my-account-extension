@@ -25,7 +25,7 @@ class MyAccountBlock extends Block
         ]);
 
         $output = sprintf('<div %s>', $wrapperAttrs);
-        $output .= '<div class="jankx-account-inner">';
+        $output .= '<div class="jankx-account-layout">';
 
         // Render inner blocks
         $output .= $content;

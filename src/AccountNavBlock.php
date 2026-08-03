@@ -31,7 +31,7 @@ class AccountNavBlock extends Block
         $accountUrl = $pageId ? get_permalink($pageId) : '#';
 
         $wrapperAttrs = get_block_wrapper_attributes([
-            'class' => 'jankx-account-nav orientation-' . esc_attr($orientation),
+            'class' => 'jankx-sidebar-nav orientation-' . esc_attr($orientation),
         ]);
 
         $output = sprintf('<nav %s>', $wrapperAttrs);
