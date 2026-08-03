@@ -3,7 +3,7 @@
         'name' => 'jankx/mya-account',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '6fa9b16558c4082432888e95b867a258a495343f',
+        'reference' => 'ef60b3d7a1640901ff9f30bb70da7a2af1d75144',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'jankx/mya-account' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '6fa9b16558c4082432888e95b867a258a495343f',
+            'reference' => 'ef60b3d7a1640901ff9f30bb70da7a2af1d75144',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -17,20 +17,19 @@ class MyAccountShortcode
         }
 
         $atts = shortcode_atts([
-            'show_profile' => true,
-            'show_bookings' => true,
-            'show_credits' => true,
-            'show_coupons' => true,
-            'show_settings' => true,
+            'show_sidebar' => true,
         ], $atts, self::SHORTCODE);
 
         $user = wp_get_current_user();
-        $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'profile';
+        
+        // Detect active tab from query var (sub-page) or GET param
+        $activeTab = get_query_var('jankx_account_page');
+        if (empty($activeTab)) {
+            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'profile';
+        }
 
         ob_start();
-        $this->renderWrapperStart($user, $activeTab, $atts);
-        $this->renderTabContent($activeTab, $user, $atts);
-        $this->renderWrapperEnd();
+        $this->renderLayout($user, $activeTab, $atts);
         return ob_get_clean();
     }
 
@@ -51,78 +50,173 @@ class MyAccountShortcode
         </div>';
     }
 
-    protected function renderWrapperStart($user, string $activeTab, array $atts): void
+    protected function renderLayout($user, string $activeTab, array $atts): void
     {
         ?>
-        <div class="jankx-my-account" data-active-tab="<?php echo esc_attr($activeTab); ?>">
-            <div class="jankx-account-header">
-                <div class="jankx-account-avatar">
-                    <?php
-                    $avatarId = get_user_meta($user->ID, 'jankx_avatar_id', true);
-                    $avatarUrl = $avatarId ? wp_get_attachment_image_url($avatarId, 'medium') : get_avatar_url($user->ID, ['size' => 120]);
-                    ?>
-                    <img src="<?php echo esc_url($avatarUrl); ?>" alt="<?php echo esc_attr($user->display_name); ?>" class="jankx-avatar-img">
-                    <button type="button" class="jankx-avatar-change" data-action="change-avatar">
+        <div class="jankx-account-layout">
+            <!-- Sidebar -->
+            <aside class="jankx-account-sidebar">
+                <!-- Sidebar Header -->
+                <div class="jankx-sidebar-header">
+                    <div class="jankx-avatar-wrapper">
+                        <?php
+                        $avatarId = get_user_meta($user->ID, 'jankx_avatar_id', true);
+                        $avatarUrl = $avatarId ? wp_get_attachment_image_url($avatarId, 'medium') : get_avatar_url($user->ID, ['size' => 120]);
+                        ?>
+                        <img src="<?php echo esc_url($avatarUrl); ?>" 
+                             alt="<?php echo esc_attr($user->display_name); ?>" 
+                             class="jankx-avatar-img">
+                        <button type="button" class="jankx-avatar-change" data-action="change-avatar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                <circle cx="12" cy="13" r="4"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <h2 class="jankx-user-name"><?php echo esc_html($user->display_name); ?></h2>
+                    <a href="?tab=profile" class="jankx-edit-profile-link">
+                        Cập nhật thông tin cá nhân
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                            <circle cx="12" cy="13" r="4"/>
+                            <path d="M9 18l6-6-6-6"/>
                         </svg>
-                        Đổi ảnh
-                    </button>
+                    </a>
                 </div>
-                <div class="jankx-account-info">
-                    <h1 class="jankx-account-name"><?php echo esc_html($user->display_name); ?></h1>
-                    <p class="jankx-account-email"><?php echo esc_html($user->user_email); ?></p>
-                    <p class="jankx-account-member">
-                        Thành viên từ: <?php echo esc_html(date('d/m/Y', strtotime($user->user_registered))); ?>
-                    </p>
-                </div>
-            </div>
 
-            <nav class="jankx-account-nav">
-                <?php
-                $tabs = [
-                    'profile' => 'Hồ sơ',
-                    'bookings' => 'Lịch sử đặt tour',
-                ];
+                <!-- Membership Badge -->
+                <?php $this->renderMembershipBadge($user); ?>
 
-                if ($atts['show_credits'] && $this->isExtensionActive('user-credits')) {
-                    $tabs['credits'] = 'Số dư tín dụng';
-                }
+                <!-- Sidebar Navigation -->
+                <nav class="jankx-sidebar-nav">
+                    <?php $this->renderSidebarNav($activeTab); ?>
+                </nav>
+            </aside>
 
-                if ($atts['show_coupons'] && $this->isExtensionActive('coupon-system')) {
-                    $tabs['coupons'] = 'Mã giảm giá';
-                }
-
-                if ($atts['show_settings']) {
-                    $tabs['settings'] = 'Cài đặt';
-                }
-
-                foreach ($tabs as $tabId => $tabLabel) :
-                ?>
-                <a href="?tab=<?php echo esc_attr($tabId); ?>"
-                   class="jankx-nav-tab <?php echo $activeTab === $tabId ? 'jankx-nav-tab-active' : ''; ?>"
-                   data-tab="<?php echo esc_attr($tabId); ?>">
-                    <?php echo esc_html($tabLabel); ?>
-                </a>
-                <?php endforeach; ?>
-            </nav>
-
-            <div class="jankx-account-content">
+            <!-- Main Content -->
+            <main class="jankx-account-content">
+                <?php $this->renderTabContent($activeTab, $user); ?>
+            </main>
+        </div>
         <?php
     }
 
-    protected function renderTabContent(string $activeTab, $user, array $atts): void
+    protected function renderMembershipBadge($user): void
     {
+        $userLevel = get_user_meta($user->ID, 'jankx_user_level', true) ?: 'bronze';
+        
+        $levels = [
+            'bronze' => [
+                'name' => 'Hạng Đồng',
+                'description' => 'Thành viên mới, tích lũy điểm để nâng hạng.',
+                'color' => '#CD7F32',
+                'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+            ],
+            'silver' => [
+                'name' => 'Hạng Bạc',
+                'description' => 'Nhận thêm ưu đãi để hướng các ưu đãi độc quyền dành riêng cho bạn.',
+                'color' => '#65A30D',
+                'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+            ],
+            'gold' => [
+                'name' => 'Hạng Vàng',
+                'description' => 'Ưu đãi cao nhất và dịch vụ VIP.',
+                'color' => '#F59E0B',
+                'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+            ],
+        ];
+
+        $level = $levels[$userLevel] ?? $levels['bronze'];
+        ?>
+        <div class="jankx-membership-badge" style="--badge-color: <?php echo esc_attr($level['color']); ?>">
+            <div class="jankx-badge-icon">
+                <?php echo $level['icon']; ?>
+            </div>
+            <div class="jankx-badge-content">
+                <h3 class="jankx-badge-name"><?php echo esc_html($level['name']); ?></h3>
+                <p class="jankx-badge-desc"><?php echo esc_html($level['description']); ?></p>
+                <a href="#" class="jankx-badge-link">
+                    Xem chi tiết
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <?php
+    }
+
+    protected function renderSidebarNav(string $activeTab): void
+    {
+        $subPages = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPages();
+
+        foreach ($subPages as $slug => $page) {
+            // Skip if extension is not active
+            if (!empty($page['extension']) && !$this->isExtensionActive($page['extension'])) {
+                continue;
+            }
+
+            // Skip if not shown in nav
+            if (empty($page['show_in_nav'])) {
+                continue;
+            }
+
+            $isActive = $activeTab === $slug;
+            $url = $this->getSubPageUrl($slug);
+            ?>
+            <a href="<?php echo esc_url($url); ?>" 
+               class="jankx-nav-item <?php echo $isActive ? 'jankx-nav-active' : ''; ?>"
+               data-tab="<?php echo esc_attr($slug); ?>">
+                <span class="jankx-nav-icon"><?php echo $page['icon'] ?? ''; ?></span>
+                <span class="jankx-nav-label"><?php echo esc_html($page['label']); ?></span>
+                <?php if (!empty($page['badge'])): ?>
+                    <span class="jankx-nav-badge"><?php echo esc_html($page['badge']); ?></span>
+                <?php endif; ?>
+            </a>
+            <?php
+        }
+    }
+
+    /**
+     * Get URL for a sub-page
+     */
+    protected function getSubPageUrl(string $subPage): string
+    {
+        $pageId = get_option('jankx_my_account_page_id', 0);
+        if ($pageId) {
+            $baseUrl = get_permalink($pageId);
+            if ($baseUrl) {
+                return rtrim($baseUrl, '/') . '/' . $subPage . '/';
+            }
+        }
+        
+        // Fallback to query string
+        return '?tab=' . $subPage;
+    }
+
+    protected function renderTabContent(string $activeTab, $user): void
+    {
+        $subPage = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPage($activeTab);
+        
+        if ($subPage && isset($subPage['callback']) && is_callable($subPage['callback'])) {
+            call_user_func($subPage['callback'], $user);
+            return;
+        }
+
+        // Fallback to built-in tab rendering
         switch ($activeTab) {
-            case 'bookings':
-                $this->renderBookingsTab($user);
+            case 'coupons':
+                $this->renderCouponsTab($user);
                 break;
             case 'credits':
                 $this->renderCreditsTab($user);
                 break;
-            case 'coupons':
-                $this->renderCouponsTab($user);
+            case 'orders':
+                $this->renderOrdersTab($user);
+                break;
+            case 'reviews':
+                $this->renderReviewsTab($user);
+                break;
+            case 'login-history':
+                $this->renderLoginHistoryTab($user);
                 break;
             case 'settings':
                 $this->renderSettingsTab($user);
@@ -134,19 +228,11 @@ class MyAccountShortcode
         }
     }
 
-    protected function renderWrapperEnd(): void
-    {
-        ?>
-            </div>
-        </div>
-        <?php
-    }
-
     protected function renderProfileTab($user): void
     {
         $phone = get_user_meta($user->ID, 'phone', true);
         ?>
-        <div class="jankx-tab-panel jankx-tab-profile" id="jankx-tab-profile">
+        <div class="jankx-tab-panel jankx-tab-profile">
             <h2 class="jankx-section-title">Thông tin cá nhân</h2>
             <form id="jankx-profile-form" class="jankx-form">
                 <div class="jankx-form-group">
@@ -210,14 +296,14 @@ class MyAccountShortcode
         <?php
     }
 
-    protected function renderBookingsTab($user): void
+    protected function renderOrdersTab($user): void
     {
-        $bookings = $this->getUserBookings($user->ID);
+        $orders = $this->getUserOrders($user->ID);
         ?>
-        <div class="jankx-tab-panel jankx-tab-bookings" id="jankx-tab-bookings">
-            <h2 class="jankx-section-title">Lịch sử đặt tour</h2>
+        <div class="jankx-tab-panel jankx-tab-orders">
+            <h2 class="jankx-section-title">Đơn hàng của bạn</h2>
 
-            <?php if (empty($bookings)) : ?>
+            <?php if (empty($orders)) : ?>
                 <div class="jankx-empty-state">
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -225,70 +311,87 @@ class MyAccountShortcode
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    <p>Bạn chưa có đơn đặt tour nào.</p>
+                    <p>Bạn chưa có đơn hàng nào.</p>
                     <a href="<?php echo esc_url(home_url('/danh-sach-tour')); ?>" class="jankx-btn jankx-btn-outline">
                         Khám phá tour ngay
                     </a>
                 </div>
             <?php else : ?>
-                <div class="jankx-table-responsive">
-                    <table class="jankx-table">
-                        <thead>
-                            <tr>
-                                <th>Mã đơn</th>
-                                <th>Tour</th>
-                                <th>Ngày khởi hành</th>
-                                <th>Số lượng</th>
-                                <th>Tổng tiền</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($bookings as $booking) :
-                                $status = get_post_meta($booking->ID, '_booking_status', true);
-                                $statusClass = $this->getStatusClass($status);
-                                $total = get_post_meta($booking->ID, '_booking_total', true);
-                                $departureDate = get_post_meta($booking->ID, '_departure_date', true);
-                                $quantity = get_post_meta($booking->ID, '_booking_quantity', true);
-                            ?>
-                            <tr>
-                                <td>
-                                    <strong>#<?php echo esc_html($booking->post_title ?: $booking->ID); ?></strong>
-                                </td>
-                                <td>
-                                    <?php
-                                    $tourId = get_post_meta($booking->ID, '_tour_id', true);
-                                    if ($tourId) :
-                                        $tourTitle = get_the_title($tourId);
-                                        $tourUrl = get_permalink($tourId);
-                                    ?>
-                                    <a href="<?php echo esc_url($tourUrl); ?>" class="jankx-tour-link">
-                                        <?php echo esc_html($tourTitle); ?>
-                                    </a>
-                                    <?php else : ?>
-                                        <span class="text-muted">—</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php echo $departureDate ? esc_html(date('d/m/Y', strtotime($departureDate))) : '<span class="text-muted">—</span>'; ?>
-                                </td>
-                                <td><?php echo esc_html($quantity ?: '—'); ?></td>
-                                <td>
-                                    <strong class="jankx-price">
-                                        <?php echo $total ? number_format((float)$total, 0, ',', '.') . '₫' : '—'; ?>
-                                    </strong>
-                                </td>
-                                <td>
-                                    <span class="jankx-badge <?php echo esc_attr($statusClass); ?>">
-                                        <?php echo esc_html($this->getStatusLabel($status)); ?>
-                                    </span>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                <div class="jankx-orders-list">
+                    <?php foreach ($orders as $order) :
+                        $status = get_post_meta($order->ID, '_booking_status', true);
+                        $statusClass = $this->getStatusClass($status);
+                        $total = get_post_meta($order->ID, '_booking_total', true);
+                        $departureDate = get_post_meta($order->ID, '_departure_date', true);
+                        $quantity = get_post_meta($order->ID, '_booking_quantity', true);
+                        $tourId = get_post_meta($order->ID, '_tour_id', true);
+                        $tourTitle = $tourId ? get_the_title($tourId) : 'N/A';
+                        $tourImage = $tourId ? get_the_post_thumbnail_url($tourId, 'thumbnail') : '';
+                    ?>
+                    <div class="jankx-order-card">
+                        <div class="jankx-order-image">
+                            <?php if ($tourImage): ?>
+                                <img src="<?php echo esc_url($tourImage); ?>" alt="<?php echo esc_attr($tourTitle); ?>">
+                            <?php else: ?>
+                                <div class="jankx-order-placeholder">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <polyline points="21 15 16 10 5 21"/>
+                                    </svg>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="jankx-order-info">
+                            <h3 class="jankx-order-title"><?php echo esc_html($tourTitle); ?></h3>
+                            <p class="jankx-order-meta">
+                                <span class="jankx-order-date">
+                                    <?php echo $departureDate ? esc_html(date('d/m/Y', strtotime($departureDate))) : '—'; ?>
+                                </span>
+                                <span class="jankx-order-qty">Số lượng: <?php echo esc_html($quantity ?: '1'); ?></span>
+                            </p>
+                        </div>
+                        <div class="jankx-order-price">
+                            <?php if ($total): ?>
+                                <span class="jankx-price-amount"><?php echo number_format((float)$total, 0, ',', '.'); ?>đ</span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="jankx-order-status">
+                            <span class="jankx-badge <?php echo esc_attr($statusClass); ?>">
+                                <?php echo esc_html($this->getStatusLabel($status)); ?>
+                            </span>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    protected function renderReviewsTab($user): void
+    {
+        ?>
+        <div class="jankx-tab-panel jankx-tab-reviews">
+            <h2 class="jankx-section-title">Đánh giá của bạn</h2>
+            <div class="jankx-empty-state">
+                <p>Bạn chưa có đánh giá nào.</p>
+            </div>
+        </div>
+        <?php
+    }
+
+    protected function renderCouponsTab($user): void
+    {
+        if (!$this->isExtensionActive('coupon-system')) {
+            return;
+        }
+        ?>
+        <div class="jankx-tab-panel jankx-tab-coupons">
+            <h2 class="jankx-section-title">Mã ưu đãi của bạn</h2>
+            <div class="jankx-empty-state">
+                <p>Bạn chưa có mã ưu đãi nào.</p>
+            </div>
         </div>
         <?php
     }
@@ -299,15 +402,15 @@ class MyAccountShortcode
             return;
         }
 
-        $balance = $this->getUserCredits($user->ID);
+        $balance = $this->getUserCredits();
         ?>
-        <div class="jankx-tab-panel jankx-tab-credits" id="jankx-tab-credits">
-            <h2 class="jankx-section-title">Số dư tín dụng</h2>
-
+        <div class="jankx-tab-panel jankx-tab-credits">
+            <h2 class="jankx-section-title">Xu của bạn</h2>
+            
             <div class="jankx-credit-card">
                 <div class="jankx-credit-label">Số dư hiện tại</div>
                 <div class="jankx-credit-amount">
-                    <?php echo number_format((float)$balance, 0, ',', '.'); ?>₫
+                    <?php echo number_format((float)$balance, 0, ',', '.'); ?> XU
                 </div>
             </div>
 
@@ -331,7 +434,7 @@ class MyAccountShortcode
                                 <td><?php echo esc_html(date('d/m/Y H:i', strtotime($item->date))); ?></td>
                                 <td><?php echo esc_html($item->description); ?></td>
                                 <td class="<?php echo $item->amount > 0 ? 'text-success' : 'text-danger'; ?>">
-                                    <?php echo ($item->amount > 0 ? '+' : '') . number_format((float)$item->amount, 0, ',', '.'); ?>₫
+                                    <?php echo ($item->amount > 0 ? '+' : '') . number_format((float)$item->amount, 0, ',', '.'); ?> XU
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -343,52 +446,12 @@ class MyAccountShortcode
         <?php
     }
 
-    protected function renderCouponsTab($user): void
+    protected function renderLoginHistoryTab($user): void
     {
-        if (!$this->isExtensionActive('coupon-system')) {
-            return;
-        }
-
-        $coupons = $this->getUserCoupons($user->ID);
         ?>
-        <div class="jankx-tab-panel jankx-tab-coupons" id="jankx-tab-coupons">
-            <h2 class="jankx-section-title">Mã giảm giá của bạn</h2>
-
-            <?php if (empty($coupons)) : ?>
-                <div class="jankx-empty-state">
-                    <p>Bạn chưa có mã giảm giá nào.</p>
-                </div>
-            <?php else : ?>
-                <div class="jankx-coupon-grid">
-                    <?php foreach ($coupons as $coupon) :
-                        $expiry = get_post_meta($coupon->ID, '_coupon_expiry', true);
-                        $isExpired = $expiry && strtotime($expiry) < time();
-                    ?>
-                    <div class="jankx-coupon-item <?php echo $isExpired ? 'jankx-coupon-expired' : ''; ?>">
-                        <div class="jankx-coupon-badge">
-                            <?php
-                            $discountType = get_post_meta($coupon->ID, '_coupon_discount_type', true);
-                            $discountValue = get_post_meta($coupon->ID, '_coupon_discount_value', true);
-                            if ($discountType === 'percent') :
-                                echo esc_html($discountValue) . '%';
-                            else :
-                                echo number_format((float)$discountValue, 0, ',', '.') . '₫';
-                            endif;
-                            ?>
-                        </div>
-                        <div class="jankx-coupon-info">
-                            <div class="jankx-coupon-code"><?php echo esc_html($coupon->post_title); ?></div>
-                            <div class="jankx-coupon-desc"><?php echo esc_html($coupon->post_content ?: 'Áp dụng cho tour'); ?></div>
-                            <?php if ($expiry) : ?>
-                            <div class="jankx-coupon-expiry">
-                                HSD: <?php echo esc_html(date('d/m/Y', strtotime($expiry))); ?>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+        <div class="jankx-tab-panel jankx-tab-login-history">
+            <h2 class="jankx-section-title">Quản lý đăng nhập</h2>
+            <p class="text-muted">Tính năng đang được phát triển.</p>
         </div>
         <?php
     }
@@ -396,7 +459,7 @@ class MyAccountShortcode
     protected function renderSettingsTab($user): void
     {
         ?>
-        <div class="jankx-tab-panel jankx-tab-settings" id="jankx-tab-settings">
+        <div class="jankx-tab-panel jankx-tab-settings">
             <h2 class="jankx-section-title">Cài đặt tài khoản</h2>
 
             <div class="jankx-settings-section">
@@ -433,7 +496,7 @@ class MyAccountShortcode
         <?php
     }
 
-    protected function getUserBookings(int $userId): array
+    protected function getUserOrders(int $userId): array
     {
         $postTypes = ['jankx_booking', 'booking'];
         $foundPostType = null;
@@ -467,6 +530,42 @@ class MyAccountShortcode
         return $query->posts;
     }
 
+    protected function getCouponCount(): int
+    {
+        if (!$this->isExtensionActive('coupon-system')) {
+            return 0;
+        }
+
+        return count(get_posts([
+            'post_type' => 'jankx_coupon',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+        ]));
+    }
+
+    protected function getUserCredits(): float
+    {
+        if (!$this->isExtensionActive('user-credits')) {
+            return 0;
+        }
+
+        return (float) get_user_meta(get_current_user_id(), 'jankx_credits', true) ?: 0;
+    }
+
+    protected function getCreditHistory(int $userId): array
+    {
+        if (!$this->isExtensionActive('user-credits')) {
+            return [];
+        }
+
+        return get_user_meta($userId, 'jankx_credit_history', true) ?: [];
+    }
+
+    protected function getOrderCount(): int
+    {
+        return count($this->getUserOrders(get_current_user_id()));
+    }
+
     protected function getStatusClass(string $status): string
     {
         $classes = [
@@ -491,42 +590,6 @@ class MyAccountShortcode
         ];
 
         return $labels[$status] ?? ucfirst($status);
-    }
-
-    protected function getUserCredits(int $userId)
-    {
-        if ($this->isExtensionActive('user-credits')) {
-            return get_user_meta($userId, 'jankx_credits', true) ?: 0;
-        }
-        return 0;
-    }
-
-    protected function getCreditHistory(int $userId): array
-    {
-        if ($this->isExtensionActive('user-credits')) {
-            return get_user_meta($userId, 'jankx_credit_history', true) ?: [];
-        }
-        return [];
-    }
-
-    protected function getUserCoupons(int $userId): array
-    {
-        if (!$this->isExtensionActive('coupon-system')) {
-            return [];
-        }
-
-        return get_posts([
-            'post_type' => 'jankx_coupon',
-            'post_status' => 'publish',
-            'meta_query' => [
-                [
-                    'key' => '_assigned_users',
-                    'value' => $userId,
-                    'compare' => 'LIKE',
-                ],
-            ],
-            'posts_per_page' => -1,
-        ]);
     }
 
     protected function isExtensionActive(string $extensionSlug): bool

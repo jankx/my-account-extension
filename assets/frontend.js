@@ -1,224 +1,162 @@
 /**
- * Nobitour My Account - Frontend JavaScript
+ * Jankx My Account - Frontend Scripts
  */
 (function($) {
     'use strict';
 
-    var $document = $(document);
-    var config = window.jankxMyAccount || {};
-
-    var MyAccount = {
+    const MyAccount = {
         init: function() {
             this.bindEvents();
-            this.initAvatarUpload();
+            this.initTabs();
         },
 
         bindEvents: function() {
-            $document.on('submit', '#jankx-profile-form', this.handleProfileUpdate.bind(this));
-            $document.on('submit', '#jankx-password-form', this.handlePasswordChange.bind(this));
-            $document.on('click', '[data-action="change-avatar"]', this.triggerAvatarUpload.bind(this));
-            $document.on('change', '#jankx-avatar-input', this.handleAvatarUpload.bind(this));
-            $document.on('click', '#jankx-delete-account', this.handleDeleteAccount.bind(this));
-            $document.on('change', '.jankx-checkbox input[type="checkbox"]', this.handleSettingsChange.bind(this));
+            // Profile form
+            $(document).on('submit', '#jankx-profile-form', this.handleProfileSubmit.bind(this));
+            
+            // Password form
+            $(document).on('submit', '#jankx-password-form', this.handlePasswordSubmit.bind(this));
+            
+            // Avatar change
+            $(document).on('click', '.jankx-avatar-change', this.handleAvatarChange.bind(this));
+            
+            // Avatar upload
+            $(document).on('change', '#jankx-avatar-input', this.handleAvatarUpload.bind(this));
         },
 
-        handleProfileUpdate: function(e) {
+        initTabs: function() {
+            const $layout = $('.jankx-account-layout');
+            if (!$layout.length) return;
+
+            // Highlight active nav item
+            const activeTab = new URLSearchParams(window.location.search).get('tab') || 'profile';
+            $(`.jankx-nav-item[data-tab="${activeTab}"]`).addClass('jankx-nav-active');
+        },
+
+        handleProfileSubmit: function(e) {
             e.preventDefault();
-
-            var $form = $(e.currentTarget);
-            var $btn = $form.find('button[type="submit"]');
-            var $status = $('#jankx-profile-status');
-
-            var data = {
-                action: 'jankx_update_profile',
-                nonce: config.nonce,
-                display_name: $form.find('[name="display_name"]').val(),
-                email: $form.find('[name="email"]').val(),
-                phone: $form.find('[name="phone"]').val()
-            };
-
-            $btn.prop('disabled', true);
-            this.showStatus($status, 'loading', config.i18n.saving);
-
-            $.post(config.ajaxUrl, data)
-                .done(function(response) {
+            
+            const $form = $(e.target);
+            const $status = $('#jankx-profile-status');
+            const $btn = $('#jankx-save-profile');
+            
+            $btn.prop('disabled', true).text(jankxMyAccount.i18n.saving);
+            $status.removeClass('success error').text('');
+            
+            $.ajax({
+                url: jankxMyAccount.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'jankx_update_profile',
+                    nonce: jankxMyAccount.nonce,
+                    display_name: $form.find('[name="display_name"]').val(),
+                    email: $form.find('[name="email"]').val(),
+                    phone: $form.find('[name="phone"]').val()
+                },
+                success: function(response) {
                     if (response.success) {
-                        MyAccount.showStatus($status, 'success', response.data.message);
-                        MyAccount.updateHeaderInfo(data.display_name, data.email);
+                        $status.addClass('success').text(response.data.message);
+                        // Update display name in sidebar
+                        $('.jankx-user-name').text($form.find('[name="display_name"]').val());
                     } else {
-                        MyAccount.showStatus($status, 'error', response.data.message);
+                        $status.addClass('error').text(response.data.message);
                     }
-                })
-                .fail(function() {
-                    MyAccount.showStatus($status, 'error', config.i18n.error);
-                })
-                .always(function() {
-                    $btn.prop('disabled', false);
-                });
+                },
+                error: function() {
+                    $status.addClass('error').text(jankxMyAccount.i18n.error);
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).text('Lưu thay đổi');
+                }
+            });
         },
 
-        handlePasswordChange: function(e) {
+        handlePasswordSubmit: function(e) {
             e.preventDefault();
-
-            var $form = $(e.currentTarget);
-            var $btn = $form.find('button[type="submit"]');
-            var $status = $('#jankx-password-status');
-
-            var newPass = $form.find('[name="new_password"]').val();
-            var confirmPass = $form.find('[name="confirm_password"]').val();
-
-            if (newPass !== confirmPass) {
-                this.showStatus($status, 'error', 'Mật khẩu xác nhận không khớp.');
-                return;
-            }
-
-            if (newPass.length < 8) {
-                this.showStatus($status, 'error', 'Mật khẩu mới phải có ít nhất 8 ký tự.');
-                return;
-            }
-
-            var data = {
-                action: 'jankx_change_password',
-                nonce: config.nonce,
-                current_password: $form.find('[name="current_password"]').val(),
-                new_password: newPass,
-                confirm_password: confirmPass
-            };
-
-            $btn.prop('disabled', true);
-            this.showStatus($status, 'loading', config.i18n.saving);
-
-            $.post(config.ajaxUrl, data)
-                .done(function(response) {
+            
+            const $form = $(e.target);
+            const $status = $('#jankx-password-status');
+            const $btn = $('#jankx-change-password');
+            
+            $btn.prop('disabled', true).text(jankxMyAccount.i18n.saving);
+            $status.removeClass('success error').text('');
+            
+            $.ajax({
+                url: jankxMyAccount.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'jankx_change_password',
+                    nonce: jankxMyAccount.nonce,
+                    current_password: $form.find('[name="current_password"]').val(),
+                    new_password: $form.find('[name="new_password"]').val(),
+                    confirm_password: $form.find('[name="confirm_password"]').val()
+                },
+                success: function(response) {
                     if (response.success) {
-                        MyAccount.showStatus($status, 'success', response.data.message);
+                        $status.addClass('success').text(response.data.message);
                         $form[0].reset();
                     } else {
-                        MyAccount.showStatus($status, 'error', response.data.message);
+                        $status.addClass('error').text(response.data.message);
                     }
-                })
-                .fail(function() {
-                    MyAccount.showStatus($status, 'error', config.i18n.error);
-                })
-                .always(function() {
-                    $btn.prop('disabled', false);
-                });
+                },
+                error: function() {
+                    $status.addClass('error').text(jankxMyAccount.i18n.error);
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).text('Đổi mật khẩu');
+                }
+            });
         },
 
-        initAvatarUpload: function() {
-            if ($('#jankx-avatar-input').length === 0) {
-                $('body').append('<input type="file" id="jankx-avatar-input" class="jankx-avatar-upload-input" accept="image/jpeg,image/png,image/gif,image/webp">');
-            }
-        },
-
-        triggerAvatarUpload: function(e) {
+        handleAvatarChange: function(e) {
             e.preventDefault();
+            
+            // Create hidden file input
+            if (!$('#jankx-avatar-input').length) {
+                $('body').append('<input type="file" id="jankx-avatar-input" accept="image/*" style="display:none">');
+            }
             $('#jankx-avatar-input').trigger('click');
         },
 
         handleAvatarUpload: function(e) {
-            var file = e.target.files[0];
+            const file = e.target.files[0];
             if (!file) return;
-
-            var allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-            if (allowedTypes.indexOf(file.type) === -1) {
-                alert('Chỉ chấp nhận file JPG, PNG, GIF hoặc WebP.');
-                return;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Kích thước file không được vượt quá 5MB.');
-                return;
-            }
-
-            var formData = new FormData();
+            
+            const $btn = $('.jankx-avatar-change');
+            const formData = new FormData();
+            
             formData.append('action', 'jankx_upload_avatar');
-            formData.append('nonce', config.nonce);
+            formData.append('nonce', jankxMyAccount.nonce);
             formData.append('avatar', file);
-
-            var $avatar = $('.jankx-avatar-img');
-            var originalSrc = $avatar.attr('src');
-
+            
+            $btn.prop('disabled', true).text(jankxMyAccount.i18n.uploading);
+            
             $.ajax({
-                url: config.ajaxUrl,
+                url: jankxMyAccount.ajaxUrl,
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
-                beforeSend: function() {
-                    var reader = new FileReader();
-                    reader.onload = function(ev) {
-                        $avatar.attr('src', ev.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                },
                 success: function(response) {
                     if (response.success) {
-                        $avatar.attr('src', response.data.url);
-                        alert(response.data.message);
+                        $('.jankx-avatar-img').attr('src', response.data.url);
                     } else {
-                        $avatar.attr('src', originalSrc);
                         alert(response.data.message);
                     }
                 },
                 error: function() {
-                    $avatar.attr('src', originalSrc);
-                    alert(config.i18n.error);
+                    alert(jankxMyAccount.i18n.error);
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html(`
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                        Đổi ảnh
+                    `);
                 }
             });
-
-            $(e.target).val('');
-        },
-
-        handleSettingsChange: function(e) {
-            var $checkbox = $(e.currentTarget);
-            var settings = {};
-
-            $('.jankx-checkbox input[type="checkbox"]').each(function() {
-                settings[$(this).attr('name')] = $(this).is(':checked') ? 1 : 0;
-            });
-
-            settings.action = 'jankx_save_settings';
-            settings.nonce = config.nonce;
-
-            $.post(config.ajaxUrl, settings)
-                .done(function(response) {
-                    if (!response.success) {
-                        alert(response.data.message);
-                    }
-                })
-                .fail(function() {
-                    alert(config.i18n.error);
-                });
-        },
-
-        handleDeleteAccount: function(e) {
-            e.preventDefault();
-
-            if (!confirm(config.i18n.confirmDelete)) {
-                return;
-            }
-
-            alert('Tính năng này sẽ được cập nhật trong phiên bản tiếp theo.');
-        },
-
-        showStatus: function($el, type, message) {
-            $el.removeClass('jankx-status-success jankx-status-error jankx-status-loading')
-               .addClass('jankx-status-' + type)
-               .text(message);
-
-            if (type === 'success') {
-                setTimeout(function() {
-                    $el.fadeOut(300, function() {
-                        $(this).text('').show();
-                    });
-                }, 3000);
-            }
-        },
-
-        updateHeaderInfo: function(name, email) {
-            $('.jankx-account-name').text(name);
-            $('.jankx-account-email').text(email);
         }
     };
 
