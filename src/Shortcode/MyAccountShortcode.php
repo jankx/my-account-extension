@@ -42,10 +42,10 @@ class MyAccountShortcode
                     <circle cx="12" cy="7" r="4"/>
                 </svg>
             </div>
-            <h2>Vui lòng đăng nhập</h2>
-            <p>Bạn cần đăng nhập để truy cập trang tài khoản.</p>
+            <h2>Please Login</h2>
+            <p>You need to login to access your account.</p>
             <a href="' . esc_url(wp_login_url(get_permalink())) . '" class="jankx-btn jankx-btn-primary">
-                Đăng nhập ngay
+                Login Now
             </a>
         </div>';
     }
@@ -75,7 +75,7 @@ class MyAccountShortcode
                     </div>
                     <h2 class="jankx-user-name"><?php echo esc_html($user->display_name); ?></h2>
                     <a href="?tab=profile" class="jankx-edit-profile-link">
-                        Cập nhật thông tin cá nhân
+                        Edit Profile
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 18l6-6-6-6"/>
                         </svg>
@@ -83,7 +83,14 @@ class MyAccountShortcode
                 </div>
 
                 <!-- Membership Badge -->
-                <?php $this->renderMembershipBadge($user); ?>
+                <?php
+                // Allow extensions to render content after sidebar header
+                if (has_action('jankx/my_account/after_sidebar')) {
+                    do_action('jankx/my_account/after_sidebar');
+                } else {
+                    $this->renderMembershipBadge($user);
+                }
+                ?>
 
                 <!-- Sidebar Navigation -->
                 <nav class="jankx-sidebar-nav">
@@ -105,20 +112,20 @@ class MyAccountShortcode
         
         $levels = [
             'bronze' => [
-                'name' => 'Hạng Đồng',
-                'description' => 'Thành viên mới, tích lũy điểm để nâng hạng.',
+                'name' => 'Bronze',
+                'description' => 'New member. Accumulate points to upgrade.',
                 'color' => '#CD7F32',
                 'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
             ],
             'silver' => [
-                'name' => 'Hạng Bạc',
-                'description' => 'Nhận thêm ưu đãi để hướng các ưu đãi độc quyền dành riêng cho bạn.',
+                'name' => 'Silver',
+                'description' => 'Exclusive deals and offers just for you.',
                 'color' => '#65A30D',
                 'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
             ],
             'gold' => [
-                'name' => 'Hạng Vàng',
-                'description' => 'Ưu đãi cao nhất và dịch vụ VIP.',
+                'name' => 'Gold',
+                'description' => 'Premium benefits and VIP service.',
                 'color' => '#F59E0B',
                 'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
             ],
@@ -134,7 +141,7 @@ class MyAccountShortcode
                 <h3 class="jankx-badge-name"><?php echo esc_html($level['name']); ?></h3>
                 <p class="jankx-badge-desc"><?php echo esc_html($level['description']); ?></p>
                 <a href="#" class="jankx-badge-link">
-                    Xem chi tiết
+                    View Details
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 18l6-6-6-6"/>
                     </svg>
@@ -233,10 +240,10 @@ class MyAccountShortcode
         $phone = get_user_meta($user->ID, 'phone', true);
         ?>
         <div class="jankx-tab-panel jankx-tab-profile">
-            <h2 class="jankx-section-title">Thông tin cá nhân</h2>
+            <h2 class="jankx-section-title">Personal Information</h2>
             <form id="jankx-profile-form" class="jankx-form">
                 <div class="jankx-form-group">
-                    <label for="jankx-display-name">Họ và tên</label>
+                    <label for="jankx-display-name">Full Name</label>
                     <input type="text" id="jankx-display-name" name="display_name"
                            value="<?php echo esc_attr($user->display_name); ?>" required>
                 </div>
@@ -248,16 +255,16 @@ class MyAccountShortcode
                                value="<?php echo esc_attr($user->user_email); ?>" required>
                     </div>
                     <div class="jankx-form-group">
-                        <label for="jankx-phone">Số điện thoại</label>
+                        <label for="jankx-phone">Phone Number</label>
                         <input type="tel" id="jankx-phone" name="phone"
                                value="<?php echo esc_attr($phone); ?>"
-                               placeholder="Ví dụ: 0912345678">
+                               placeholder="e.g. 0912345678">
                     </div>
                 </div>
 
                 <div class="jankx-form-actions">
                     <button type="submit" class="jankx-btn jankx-btn-primary" id="jankx-save-profile">
-                        Lưu thay đổi
+                        Save Changes
                     </button>
                     <span class="jankx-form-status" id="jankx-profile-status"></span>
                 </div>
@@ -265,21 +272,21 @@ class MyAccountShortcode
 
             <div class="jankx-divider"></div>
 
-            <h2 class="jankx-section-title">Đổi mật khẩu</h2>
+            <h2 class="jankx-section-title">Change Password</h2>
             <form id="jankx-password-form" class="jankx-form">
                 <div class="jankx-form-group">
-                    <label for="jankx-current-password">Mật khẩu hiện tại</label>
+                    <label for="jankx-current-password">Current Password</label>
                     <input type="password" id="jankx-current-password" name="current_password" required>
                 </div>
 
                 <div class="jankx-form-row">
                     <div class="jankx-form-group">
-                        <label for="jankx-new-password">Mật khẩu mới</label>
+                        <label for="jankx-new-password">New Password</label>
                         <input type="password" id="jankx-new-password" name="new_password"
                                minlength="8" required>
                     </div>
                     <div class="jankx-form-group">
-                        <label for="jankx-confirm-password">Xác nhận mật khẩu mới</label>
+                        <label for="jankx-confirm-password">Confirm New Password</label>
                         <input type="password" id="jankx-confirm-password" name="confirm_password"
                                minlength="8" required>
                     </div>
@@ -287,7 +294,7 @@ class MyAccountShortcode
 
                 <div class="jankx-form-actions">
                     <button type="submit" class="jankx-btn jankx-btn-primary" id="jankx-change-password">
-                        Đổi mật khẩu
+                        Change Password
                     </button>
                     <span class="jankx-form-status" id="jankx-password-status"></span>
                 </div>
@@ -301,7 +308,7 @@ class MyAccountShortcode
         $orders = $this->getUserOrders($user->ID);
         ?>
         <div class="jankx-tab-panel jankx-tab-orders">
-            <h2 class="jankx-section-title">Đơn hàng của bạn</h2>
+            <h2 class="jankx-section-title">Your Orders</h2>
 
             <?php if (empty($orders)) : ?>
                 <div class="jankx-empty-state">
@@ -311,9 +318,9 @@ class MyAccountShortcode
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    <p>Bạn chưa có đơn hàng nào.</p>
+                    <p>You have no orders yet.</p>
                     <a href="<?php echo esc_url(home_url('/danh-sach-tour')); ?>" class="jankx-btn jankx-btn-outline">
-                        Khám phá tour ngay
+                        Explore Tours
                     </a>
                 </div>
             <?php else : ?>
@@ -348,7 +355,7 @@ class MyAccountShortcode
                                 <span class="jankx-order-date">
                                     <?php echo $departureDate ? esc_html(date('d/m/Y', strtotime($departureDate))) : '—'; ?>
                                 </span>
-                                <span class="jankx-order-qty">Số lượng: <?php echo esc_html($quantity ?: '1'); ?></span>
+                                <span class="jankx-order-qty">Qty: <?php echo esc_html($quantity ?: '1'); ?></span>
                             </p>
                         </div>
                         <div class="jankx-order-price">
@@ -373,9 +380,9 @@ class MyAccountShortcode
     {
         ?>
         <div class="jankx-tab-panel jankx-tab-reviews">
-            <h2 class="jankx-section-title">Đánh giá của bạn</h2>
+            <h2 class="jankx-section-title">Your Reviews</h2>
             <div class="jankx-empty-state">
-                <p>Bạn chưa có đánh giá nào.</p>
+                <p>You have no reviews yet.</p>
             </div>
         </div>
         <?php
@@ -388,9 +395,9 @@ class MyAccountShortcode
         }
         ?>
         <div class="jankx-tab-panel jankx-tab-coupons">
-            <h2 class="jankx-section-title">Mã ưu đãi của bạn</h2>
+            <h2 class="jankx-section-title">Your Coupons</h2>
             <div class="jankx-empty-state">
-                <p>Bạn chưa có mã ưu đãi nào.</p>
+                <p>You have no coupons yet.</p>
             </div>
         </div>
         <?php
@@ -405,27 +412,27 @@ class MyAccountShortcode
         $balance = $this->getUserCredits();
         ?>
         <div class="jankx-tab-panel jankx-tab-credits">
-            <h2 class="jankx-section-title">Xu của bạn</h2>
+            <h2 class="jankx-section-title">Your Credits</h2>
             
             <div class="jankx-credit-card">
-                <div class="jankx-credit-label">Số dư hiện tại</div>
+                <div class="jankx-credit-label">Current Balance</div>
                 <div class="jankx-credit-amount">
-                    <?php echo number_format((float)$balance, 0, ',', '.'); ?> XU
+                    <?php echo number_format((float)$balance, 0, ',', '.'); ?> CREDITS
                 </div>
             </div>
 
             <div class="jankx-credit-history">
-                <h3>Lịch sử giao dịch</h3>
+                <h3>Transaction History</h3>
                 <?php $history = $this->getCreditHistory($user->ID); ?>
                 <?php if (empty($history)) : ?>
-                    <p class="text-muted">Chưa có giao dịch nào.</p>
+                    <p class="text-muted">No transactions yet.</p>
                 <?php else : ?>
                     <table class="jankx-table">
                         <thead>
                             <tr>
-                                <th>Ngày</th>
-                                <th>Mô tả</th>
-                                <th>Số tiền</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -434,7 +441,7 @@ class MyAccountShortcode
                                 <td><?php echo esc_html(date('d/m/Y H:i', strtotime($item->date))); ?></td>
                                 <td><?php echo esc_html($item->description); ?></td>
                                 <td class="<?php echo $item->amount > 0 ? 'text-success' : 'text-danger'; ?>">
-                                    <?php echo ($item->amount > 0 ? '+' : '') . number_format((float)$item->amount, 0, ',', '.'); ?> XU
+                                    <?php echo ($item->amount > 0 ? '+' : '') . number_format((float)$item->amount, 0, ',', '.'); ?> CREDITS
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -450,8 +457,8 @@ class MyAccountShortcode
     {
         ?>
         <div class="jankx-tab-panel jankx-tab-login-history">
-            <h2 class="jankx-section-title">Quản lý đăng nhập</h2>
-            <p class="text-muted">Tính năng đang được phát triển.</p>
+            <h2 class="jankx-section-title">Login History</h2>
+            <p class="text-muted">Feature under development.</p>
         </div>
         <?php
     }
@@ -460,22 +467,22 @@ class MyAccountShortcode
     {
         ?>
         <div class="jankx-tab-panel jankx-tab-settings">
-            <h2 class="jankx-section-title">Cài đặt tài khoản</h2>
+            <h2 class="jankx-section-title">Account Settings</h2>
 
             <div class="jankx-settings-section">
-                <h3>Thông báo email</h3>
+                <h3>Email Notifications</h3>
                 <form class="jankx-form">
                     <label class="jankx-checkbox">
                         <input type="checkbox" name="email_booking" checked>
-                        <span>Nhận thông báo đặt tour qua email</span>
+                        <span>Receive booking notifications via email</span>
                     </label>
                     <label class="jankx-checkbox">
                         <input type="checkbox" name="email_promotions">
-                        <span>Nhận thông tin khuyến mãi</span>
+                        <span>Receive promotional offers</span>
                     </label>
                     <label class="jankx-checkbox">
                         <input type="checkbox" name="email_newsletter">
-                        <span>Đăng ký nhận bản tin</span>
+                        <span>Subscribe to newsletter</span>
                     </label>
                 </form>
             </div>
@@ -483,13 +490,13 @@ class MyAccountShortcode
             <div class="jankx-divider"></div>
 
             <div class="jankx-settings-section">
-                <h3>Xóa tài khoản</h3>
+                <h3>Delete Account</h3>
                 <p class="text-muted">
-                    Khi xóa tài khoản, tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn.
-                    Hành động này không thể hoàn tác.
+                    Deleting your account will permanently remove all your data.
+                    This action cannot be undone.
                 </p>
                 <button type="button" class="jankx-btn jankx-btn-danger" id="jankx-delete-account">
-                    Xóa tài khoản
+                    Delete Account
                 </button>
             </div>
         </div>
@@ -582,11 +589,11 @@ class MyAccountShortcode
     protected function getStatusLabel(string $status): string
     {
         $labels = [
-            'pending' => 'Chờ xác nhận',
-            'confirmed' => 'Đã xác nhận',
-            'completed' => 'Hoàn thành',
-            'cancelled' => 'Đã hủy',
-            'paid' => 'Đã thanh toán',
+            'pending' => 'Pending',
+            'confirmed' => 'Confirmed',
+            'completed' => 'Completed',
+            'cancelled' => 'Cancelled',
+            'paid' => 'Paid',
         ];
 
         return $labels[$status] ?? ucfirst($status);

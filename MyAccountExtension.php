@@ -38,7 +38,7 @@ class MyAccountExtension extends AbstractExtension
 
         // Register core sub-pages
         self::registerSubPage('profile', [
-            'label' => 'Hồ sơ',
+            'label' => 'Profile',
             'icon' => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
             'priority' => 10,
             'callback' => [new \Jankx\Extensions\MyAccount\Shortcode\MyAccountShortcode(), 'renderProfileTab'],
@@ -122,6 +122,69 @@ class MyAccountExtension extends AbstractExtension
         add_action('init', function() {
             do_action('jankx/my_account/register_sub_pages');
         }, 99);
+
+        // Inject My Account sub-pages into User Menu block dropdown
+        add_filter('jankx/user_menu/items', [$this, 'addMyAccountMenuItems'], 20, 2);
+    }
+
+    /**
+     * Add My Account sub-page links to User Menu dropdown
+     */
+    public function addMyAccountMenuItems(array $menuItems, $user): array
+    {
+        $subPages = self::getSubPages();
+        if (empty($subPages)) {
+            return $menuItems;
+        }
+
+        $pageId = get_option('jankx_my_account_page_id', 0);
+        if (!$pageId) {
+            return $menuItems;
+        }
+
+        $accountUrl = get_permalink($pageId);
+        if (!$accountUrl) {
+            return $menuItems;
+        }
+
+        // Insert sub-pages before logout
+        $insertBefore = 'logout';
+        $newItems = [];
+
+        foreach ($menuItems as $id => $item) {
+            if ($id === $insertBefore) {
+                foreach ($subPages as $slug => $page) {
+                    if (empty($page['show_in_nav'])) {
+                        continue;
+                    }
+                    if (!empty($page['extension']) && !$this->isExtensionActiveForMenu($page['extension'])) {
+                        continue;
+                    }
+                    $newItems['account_' . $slug] = [
+                        'label' => $page['label'],
+                        'url' => rtrim($accountUrl, '/') . '/' . $slug . '/',
+                        'icon' => '',
+                    ];
+                }
+            }
+            $newItems[$id] = $item;
+        }
+
+        return $newItems;
+    }
+
+    /**
+     * Check if extension is active (for menu rendering context)
+     */
+    protected function isExtensionActiveForMenu(string $extensionSlug): bool
+    {
+        try {
+            $extensionManager = \Jankx\Facades\App::make('extension.manager');
+            if ($extensionManager && method_exists($extensionManager, 'is_extension_active')) {
+                return $extensionManager->is_extension_active($extensionSlug);
+            }
+        } catch (\Exception $e) {}
+        return false;
     }
 
     /**
