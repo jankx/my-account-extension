@@ -93,10 +93,11 @@ class MyAccountExtension extends AbstractExtension
             $settingsPage = new \Jankx\Extensions\MyAccount\Admin\SettingsPage();
             $settingsPage->register();
 
-            // Register Gutenberg blocks in admin (for block inserter)
-            add_action('init', [$this, 'registerBlocks']);
+            // Enqueue block editor script (handles client-side block registration)
+            add_action('admin_enqueue_scripts', [$this, 'enqueueBlockEditorAssets']);
         } else {
-            // Frontend: only register blocks on My Account page
+            // Frontend: register blocks server-side for rendering
+            $this->registerBlocks();
             add_action('template_redirect', [$this, 'maybeRegisterFrontendBlocks']);
         }
 
@@ -173,9 +174,9 @@ class MyAccountExtension extends AbstractExtension
             return true;
         }
 
-        // Check if we're on a page with the my-account shortcode
+        // Check if we're on a page with the my-account shortcode or block
         global $post;
-        if ($post && has_shortcode($post->post_content, 'jankx_my_account')) {
+        if ($post && (has_shortcode($post->post_content, 'jankx_my_account') || has_block('jankx/my-account', $post->post_content))) {
             return true;
         }
 
@@ -364,18 +365,37 @@ class MyAccountExtension extends AbstractExtension
         }
     }
 
+    public function enqueueBlockEditorAssets(): void
+    {
+        $screen = get_current_screen();
+        if (!$screen || $screen->base !== 'post' || $screen->post_type !== 'page') {
+            return;
+        }
+
+        wp_enqueue_script(
+            'jankx-my-account-blocks-editor',
+            $this->get_extension_url() . '/assets/blocks-editor.js',
+            ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n'],
+            '1.0.0',
+            true
+        );
+
+        wp_enqueue_style(
+            'jankx-my-account-blocks-editor',
+            $this->get_extension_url() . '/assets/frontend.css',
+            [],
+            '1.0.0'
+        );
+    }
+
     public function enqueueAssets(): void
     {
         if (!is_user_logged_in()) {
             return;
         }
 
-        $pageId = get_option('jankx_my_account_page_id', 0);
-        if (!$pageId && !is_page($pageId)) {
-            global $post;
-            if (!$post || !has_shortcode($post->post_content, 'jankx_my_account')) {
-                return;
-            }
+        if (!$this->isMyAccountPage()) {
+            return;
         }
 
         wp_enqueue_style(

@@ -7,12 +7,17 @@
     "icon": "menu",
     "description": "Navigation menu for account tabs.",
     "textdomain": "jankx",
-    "parent": ["jankx/my-account"],
+    "parent": [
+        "jankx/my-account"
+    ],
     "attributes": {
         "orientation": {
             "type": "string",
             "default": "vertical",
-            "enum": ["vertical", "horizontal"]
+            "enum": [
+                "vertical",
+                "horizontal"
+            ]
         }
     },
     "supports": {
@@ -25,8 +30,5 @@
             "text": true,
             "background": true
         }
-    },
-    "editorScript": "file:./build/index.js",
-    "editorStyle": "file:./build/editor.css",
-    "style": "file:./build/style.css"
+    }
 }

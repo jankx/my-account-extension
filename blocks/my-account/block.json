@@ -15,12 +15,19 @@
         "layout": {
             "type": "string",
             "default": "sidebar-content",
-            "enum": ["sidebar-content", "content-sidebar", "stacked"]
+            "enum": [
+                "sidebar-content",
+                "content-sidebar",
+                "stacked"
+            ]
         }
     },
     "supports": {
         "html": false,
-        "align": ["wide", "full"],
+        "align": [
+            "wide",
+            "full"
+        ],
         "spacing": {
             "margin": true,
             "padding": true,
@@ -38,8 +45,5 @@
                 "background": true
             }
         }
-    },
-    "editorScript": "file:./build/index.js",
-    "editorStyle": "file:./build/editor.css",
-    "style": "file:./build/style.css"
+    }
 }

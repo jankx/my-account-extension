@@ -7,7 +7,9 @@
     "icon": "layout",
     "description": "Sidebar section displaying user info and membership badge.",
     "textdomain": "jankx",
-    "parent": ["jankx/my-account"],
+    "parent": [
+        "jankx/my-account"
+    ],
     "attributes": {
         "showAvatar": {
             "type": "boolean",
@@ -36,8 +38,5 @@
             "text": true,
             "background": true
         }
-    },
-    "editorScript": "file:./build/index.js",
-    "editorStyle": "file:./build/editor.css",
-    "style": "file:./build/style.css"
+    }
 }
