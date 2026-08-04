@@ -97,7 +97,7 @@ class MyAccountExtension extends AbstractExtension
             $settingsPage->register();
 
             // Enqueue block editor script (handles client-side block registration)
-            add_action('admin_enqueue_scripts', [$this, 'enqueueBlockEditorAssets']);
+            add_action('enqueue_block_editor_assets', [$this, 'enqueueBlockEditorAssets']);
         } else {
             add_action('template_redirect', [$this, 'maybeRegisterFrontendBlocks']);
         }

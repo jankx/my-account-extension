@@ -7,7 +7,7 @@
     "icon": "admin-users",
     "description": "Displays user avatar, name and membership badge.",
     "textdomain": "jankx",
-    "parent": ["jankx/account-sidebar"],
+    "ancestor": ["jankx/my-account"],
     "attributes": {
         "showAvatar": { "type": "boolean", "default": true },
         "showName": { "type": "boolean", "default": true },

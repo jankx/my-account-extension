@@ -7,7 +7,6 @@
     "icon": "layout",
     "description": "Sidebar container with user info and navigation.",
     "textdomain": "jankx",
-    "parent": ["jankx/my-account"],
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },

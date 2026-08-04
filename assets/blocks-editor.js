@@ -40,20 +40,19 @@
     save: function () { return null; }
   });
 
-  // Account Sidebar — accepts sidebar-header + sidebar-nav
+  // Account Sidebar — accepts any blocks inside
   registerBlockType("jankx/account-sidebar", {
     apiVersion: 3,
     title: __("Account Sidebar", "jankx"),
     icon: "layout",
     category: "jankx",
-    parent: ["jankx/my-account"],
+    ancestor: ["jankx/my-account"],
     attributes: {},
     supports: { html: false, spacing: { padding: true, margin: true } },
     edit: function (props) {
       var blockProps = useBlockProps({ className: "jankx-account-sidebar-editor" });
       return el("div", blockProps,
         el(InnerBlocks, {
-          allowedBlocks: ["jankx/sidebar-header", "jankx/sidebar-nav"],
           template: [
             ["jankx/sidebar-header", {}],
             ["jankx/sidebar-nav", {}]
@@ -72,7 +71,7 @@
     title: __("Account Content", "jankx"),
     icon: "editor-expand",
     category: "jankx",
-    parent: ["jankx/my-account"],
+    ancestor: ["jankx/my-account"],
     attributes: {},
     supports: { html: false, spacing: { padding: true, margin: true } },
     edit: function (props) {
@@ -94,7 +93,7 @@
       title: __("Sidebar Header", "jankx"),
       icon: "admin-users",
       category: "jankx",
-      parent: ["jankx/account-sidebar"],
+      ancestor: ["jankx/my-account"],
       attrs: {
         showAvatar: { type: "boolean", default: true },
         showName: { type: "boolean", default: true },
@@ -108,7 +107,7 @@
       title: __("Sidebar Navigation", "jankx"),
       icon: "menu",
       category: "jankx",
-      parent: ["jankx/account-sidebar"],
+      ancestor: ["jankx/my-account"],
       attrs: {},
       supports: { html: false }
     }
@@ -120,7 +119,7 @@
       title: b.title,
       icon: b.icon,
       category: b.category,
-      parent: b.parent,
+      ancestor: b.ancestor,
       attributes: b.attrs,
       supports: b.supports,
       edit: function (props) {

@@ -7,7 +7,7 @@
     "icon": "editor-expand",
     "description": "Content area for account tabs.",
     "textdomain": "jankx",
-    "parent": ["jankx/my-account"],
+    "ancestor": ["jankx/my-account"],
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
