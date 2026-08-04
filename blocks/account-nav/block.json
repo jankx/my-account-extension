@@ -20,6 +20,7 @@
             ]
         }
     },
+    "editorScript": "file:./build/index.js",
     "supports": {
         "html": false,
         "spacing": {
