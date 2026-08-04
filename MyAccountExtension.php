@@ -123,9 +123,12 @@ class MyAccountExtension extends AbstractExtension
         }
 
         $blockClasses = [
-            'my-account' => \Jankx\Extensions\MyAccount\MyAccountBlock::class,
+            'my-account'      => \Jankx\Extensions\MyAccount\MyAccountBlock::class,
             'account-sidebar' => \Jankx\Extensions\MyAccount\AccountSidebarBlock::class,
-            'account-nav' => \Jankx\Extensions\MyAccount\AccountNavBlock::class,
+            'sidebar-header'  => \Jankx\Extensions\MyAccount\SidebarHeaderBlock::class,
+            'sidebar-nav'     => \Jankx\Extensions\MyAccount\SidebarNavBlock::class,
+            'account-content' => \Jankx\Extensions\MyAccount\AccountContentBlock::class,
+            'content-header'  => \Jankx\Extensions\MyAccount\ContentHeaderBlock::class,
             'account-tab-profile' => \Jankx\Extensions\MyAccount\AccountTabProfileBlock::class,
         ];
 
@@ -377,7 +380,7 @@ class MyAccountExtension extends AbstractExtension
             'jankx-my-account-blocks-editor',
             $this->get_extension_url() . '/assets/blocks-editor.js',
             ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n', 'wp-server-side-render'],
-            '1.0.0',
+            filemtime($this->get_extension_path() . '/assets/blocks-editor.js'),
             true
         );
 
@@ -385,7 +388,7 @@ class MyAccountExtension extends AbstractExtension
             'jankx-my-account-blocks-editor',
             $this->get_extension_url() . '/assets/frontend.css',
             [],
-            '1.0.0'
+            filemtime($this->get_extension_path() . '/assets/frontend.css')
         );
     }
 

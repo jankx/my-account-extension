@@ -1,27 +1,19 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "jankx/my-account",
-    "title": "My Account",
+    "name": "jankx/sidebar-nav",
+    "title": "Sidebar Navigation",
     "category": "jankx",
-    "icon": "admin-users",
-    "description": "Container block for My Account page. Accepts any block.",
+    "icon": "menu",
+    "description": "Navigation menu for account tabs.",
     "textdomain": "jankx",
+    "parent": ["jankx/account-sidebar"],
     "attributes": {
-        "layout": {
-            "type": "string",
-            "default": "sidebar-content",
-            "enum": ["sidebar-content", "content-sidebar", "stacked"]
-        },
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
         "jankxHideOnTablet": { "type": "boolean", "default": false },
         "jankxHideOnMobile": { "type": "boolean", "default": false },
         "jankxFlexGrow": { "type": "boolean", "default": false }
     },
-    "supports": {
-        "html": false,
-        "align": ["wide", "full"],
-        "spacing": { "margin": true, "padding": true, "blockGap": true }
-    }
+    "supports": { "html": false }
 }

@@ -1,10 +1,4 @@
 <?php
-/**
- * My Account Container Block
- *
- * @package Jankx\Gutenberg\Blocks
- */
-
 namespace Jankx\Extensions\MyAccount;
 
 class MyAccountBlock extends Block
@@ -17,7 +11,6 @@ class MyAccountBlock extends Block
             return $this->renderLoginPrompt();
         }
 
-        $showSidebar = $attributes['showSidebar'] ?? true;
         $layout = $attributes['layout'] ?? 'sidebar-content';
 
         $wrapperAttrs = get_block_wrapper_attributes([
@@ -26,12 +19,8 @@ class MyAccountBlock extends Block
 
         $output = sprintf('<div %s>', $wrapperAttrs);
         $output .= '<div class="jankx-account-layout">';
-
-        // Render inner blocks
         $output .= $content;
-
-        $output .= '</div>';
-        $output .= '</div>';
+        $output .= '</div></div>';
 
         return $output;
     }

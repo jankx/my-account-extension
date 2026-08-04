@@ -1,27 +1,23 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "jankx/my-account",
-    "title": "My Account",
+    "name": "jankx/sidebar-header",
+    "title": "Sidebar Header",
     "category": "jankx",
     "icon": "admin-users",
-    "description": "Container block for My Account page. Accepts any block.",
+    "description": "Displays user avatar, name and membership badge.",
     "textdomain": "jankx",
+    "parent": ["jankx/account-sidebar"],
     "attributes": {
-        "layout": {
-            "type": "string",
-            "default": "sidebar-content",
-            "enum": ["sidebar-content", "content-sidebar", "stacked"]
-        },
+        "showAvatar": { "type": "boolean", "default": true },
+        "showName": { "type": "boolean", "default": true },
+        "showMembershipBadge": { "type": "boolean", "default": true },
+        "showEditLink": { "type": "boolean", "default": true },
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
         "jankxHideOnTablet": { "type": "boolean", "default": false },
         "jankxHideOnMobile": { "type": "boolean", "default": false },
         "jankxFlexGrow": { "type": "boolean", "default": false }
     },
-    "supports": {
-        "html": false,
-        "align": ["wide", "full"],
-        "spacing": { "margin": true, "padding": true, "blockGap": true }
-    }
+    "supports": { "html": false }
 }

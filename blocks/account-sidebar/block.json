@@ -5,39 +5,19 @@
     "title": "Account Sidebar",
     "category": "jankx",
     "icon": "layout",
-    "description": "Sidebar section displaying user info and membership badge.",
+    "description": "Sidebar container with user info and navigation.",
     "textdomain": "jankx",
-    "parent": [
-        "jankx/my-account"
-    ],
+    "parent": ["jankx/my-account"],
     "attributes": {
-        "showAvatar": {
-            "type": "boolean",
-            "default": true
-        },
-        "showName": {
-            "type": "boolean",
-            "default": true
-        },
-        "showMembershipBadge": {
-            "type": "boolean",
-            "default": true
-        },
-        "showEditLink": {
-            "type": "boolean",
-            "default": true
-        }
+        "jankxHideOnUltrawide": { "type": "boolean", "default": false },
+        "jankxHideOnPc": { "type": "boolean", "default": false },
+        "jankxHideOnTablet": { "type": "boolean", "default": false },
+        "jankxHideOnMobile": { "type": "boolean", "default": false },
+        "jankxFlexGrow": { "type": "boolean", "default": false }
     },
-    "editorScript": "file:./build/index.js",
     "supports": {
         "html": false,
-        "spacing": {
-            "padding": true,
-            "margin": true
-        },
-        "color": {
-            "text": true,
-            "background": true
-        }
+        "spacing": { "padding": true, "margin": true },
+        "color": { "text": true, "background": true }
     }
 }
