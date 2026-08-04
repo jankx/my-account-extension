@@ -89,6 +89,9 @@ class MyAccountExtension extends AbstractExtension
         // Intercept sub-page requests
         add_action('template_redirect', [$this, 'handleSubPage']);
 
+        // Always register blocks so ServerSideRender works in editor
+        $this->registerBlocks();
+
         if (is_admin()) {
             $settingsPage = new \Jankx\Extensions\MyAccount\Admin\SettingsPage();
             $settingsPage->register();
@@ -96,8 +99,6 @@ class MyAccountExtension extends AbstractExtension
             // Enqueue block editor script (handles client-side block registration)
             add_action('admin_enqueue_scripts', [$this, 'enqueueBlockEditorAssets']);
         } else {
-            // Frontend: register blocks server-side for rendering
-            $this->registerBlocks();
             add_action('template_redirect', [$this, 'maybeRegisterFrontendBlocks']);
         }
 
@@ -375,7 +376,7 @@ class MyAccountExtension extends AbstractExtension
         wp_enqueue_script(
             'jankx-my-account-blocks-editor',
             $this->get_extension_url() . '/assets/blocks-editor.js',
-            ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n'],
+            ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n', 'wp-server-side-render'],
             '1.0.0',
             true
         );
