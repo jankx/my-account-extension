@@ -66,7 +66,7 @@
     save: function () { return null; }
   });
 
-  // Account Content — auto-injects tabs via PHP, just a placeholder in editor
+  // Account Content — auto-injects tabs via PHP, ServerSideRender in editor
   registerBlockType("jankx/account-content", {
     apiVersion: 3,
     title: __("Account Content", "jankx"),
@@ -78,10 +78,7 @@
     edit: function (props) {
       var blockProps = useBlockProps({ className: "jankx-account-content-editor" });
       return el("div", blockProps,
-        el("div", { className: "jankx-content-placeholder" },
-          el("h2", null, __("Account Content", "jankx")),
-          el("p", null, __("Tabs are auto-injected on frontend.", "jankx"))
-        )
+        el(ServerSideRender, { block: "jankx/account-content", attributes: props.attributes })
       );
     },
     save: function () { return null; }

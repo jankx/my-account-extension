@@ -390,6 +390,13 @@ class MyAccountExtension extends AbstractExtension
             [],
             filemtime($this->get_extension_path() . '/assets/frontend.css')
         );
+
+        wp_enqueue_style(
+            'jankx-my-account-editor',
+            $this->get_extension_url() . '/assets/editor.css',
+            ['jankx-my-account-blocks-editor'],
+            filemtime($this->get_extension_path() . '/assets/editor.css')
+        );
     }
 
     public function enqueueAssets(): void
