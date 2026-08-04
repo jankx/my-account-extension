@@ -2,6 +2,7 @@
  * My Account Blocks - Client-side registration
  * - Container blocks use InnerBlocks (allows child blocks)
  * - Content blocks use ServerSideRender (live preview)
+ * - Account Content auto-injects tabs via PHP (no InnerBlocks)
  */
 (function () {
   var registerBlockType = wp.blocks.registerBlockType;
@@ -51,9 +52,6 @@
     edit: function (props) {
       var blockProps = useBlockProps({ className: "jankx-account-sidebar-editor" });
       return el("div", blockProps,
-        el("div", { className: "jankx-sidebar-header-preview" },
-          el("p", null, __("Sidebar Header", "jankx"))
-        ),
         el(InnerBlocks, {
           allowedBlocks: ["jankx/sidebar-header", "jankx/sidebar-nav"],
           template: [
@@ -68,7 +66,7 @@
     save: function () { return null; }
   });
 
-  // Account Content — accepts content-header + tab blocks
+  // Account Content — auto-injects tabs via PHP, just a placeholder in editor
   registerBlockType("jankx/account-content", {
     apiVersion: 3,
     title: __("Account Content", "jankx"),
@@ -80,21 +78,10 @@
     edit: function (props) {
       var blockProps = useBlockProps({ className: "jankx-account-content-editor" });
       return el("div", blockProps,
-        el(InnerBlocks, {
-          allowedBlocks: [
-            "jankx/content-header",
-            "jankx/account-tab-profile",
-            "jankx/account-tab-orders",
-            "jankx/account-tab-coupons",
-            "jankx/account-tab-credits"
-          ],
-          template: [
-            ["jankx/content-header", {}],
-            ["jankx/account-tab-profile", {}]
-          ],
-          templateLock: false,
-          orientation: "vertical"
-        })
+        el("div", { className: "jankx-content-placeholder" },
+          el("h2", null, __("Account Content", "jankx")),
+          el("p", null, __("Tabs are auto-injected on frontend.", "jankx"))
+        )
       );
     },
     save: function () { return null; }
@@ -125,51 +112,6 @@
       icon: "menu",
       category: "jankx",
       parent: ["jankx/account-sidebar"],
-      attrs: {},
-      supports: { html: false }
-    },
-    {
-      name: "jankx/content-header",
-      title: __("Content Header", "jankx"),
-      icon: "text",
-      category: "jankx",
-      parent: ["jankx/account-content"],
-      attrs: {},
-      supports: { html: false }
-    },
-    {
-      name: "jankx/account-tab-profile",
-      title: __("Profile Tab", "jankx"),
-      icon: "id",
-      category: "jankx",
-      parent: ["jankx/account-content"],
-      attrs: {},
-      supports: { html: false }
-    },
-    {
-      name: "jankx/account-tab-orders",
-      title: __("Orders Tab", "jankx"),
-      icon: "list-view",
-      category: "jankx",
-      parent: ["jankx/account-content"],
-      attrs: {},
-      supports: { html: false }
-    },
-    {
-      name: "jankx/account-tab-coupons",
-      title: __("Coupons Tab", "jankx"),
-      icon: "tickets",
-      category: "jankx",
-      parent: ["jankx/account-content"],
-      attrs: {},
-      supports: { html: false }
-    },
-    {
-      name: "jankx/account-tab-credits",
-      title: __("Credits Tab", "jankx"),
-      icon: "money-alt",
-      category: "jankx",
-      parent: ["jankx/account-content"],
       attrs: {},
       supports: { html: false }
     }
