@@ -7,6 +7,8 @@
     "icon": "layout",
     "description": "Sidebar container with user info and navigation.",
     "textdomain": "jankx",
+    "editorScript": "file:./build/index.tsx.js",
+    "ancestor": ["jankx/my-account"],
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },

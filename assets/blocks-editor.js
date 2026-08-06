@@ -1,134 +1,121 @@
 /**
- * My Account Blocks - Client-side registration
- * - Container blocks use InnerBlocks (allows child blocks)
- * - Content blocks use ServerSideRender (live preview)
- * - Account Content auto-injects tabs via PHP (no InnerBlocks)
+ * My Account Blocks - Editor integration
+ *
+ * Registers all My Account blocks client-side and injects their
+ * edit/save functions. Blocks without their own editorScript
+ * (no build step) are registered here using metadata passed from
+ * PHP via wp_localize_script. The blocks.registerBlockType filter
+ * then injects the correct edit functions so inner blocks are
+ * preserved correctly when saving.
  */
 (function () {
   var registerBlockType = wp.blocks.registerBlockType;
+  var addFilter   = wp.hooks.addFilter;
   var InnerBlocks = wp.blockEditor.InnerBlocks;
   var useBlockProps = wp.blockEditor.useBlockProps;
-  var ServerSideRender = wp.serverSideRender;
-  var __ = wp.i18n.__;
-  var el = wp.element.createElement;
+  var select      = wp.data.select;
+  var SSR         = wp.serverSideRender;
+  var el          = wp.element.createElement;
 
-  // ──────────────────────────────────────
-  // CONTAINER BLOCKS — use InnerBlocks
-  // ──────────────────────────────────────
-
-  // My Account — accepts ALL blocks
-  registerBlockType("jankx/my-account", {
-    apiVersion: 3,
-    title: __("My Account", "jankx"),
-    icon: "admin-users",
-    category: "jankx",
-    attributes: {
-      layout: { type: "string", default: "sidebar-content", enum: ["sidebar-content", "content-sidebar", "stacked"] }
-    },
-    supports: { html: false, align: ["wide", "full"], spacing: { margin: true, padding: true, blockGap: true } },
-    edit: function (props) {
-      var blockProps = useBlockProps({ className: "jankx-my-account-editor" });
-      return el("div", blockProps,
-        el("div", { className: "jankx-account-layout" },
-          el(InnerBlocks, {
-            templateLock: false,
-            orientation: "vertical"
-          })
-        )
-      );
-    },
-    save: function () { return null; }
-  });
-
-  // Account Sidebar — accepts any blocks inside
-  registerBlockType("jankx/account-sidebar", {
-    apiVersion: 3,
-    title: __("Account Sidebar", "jankx"),
-    icon: "layout",
-    category: "jankx",
-    ancestor: ["jankx/my-account"],
-    attributes: {},
-    supports: { html: false, spacing: { padding: true, margin: true } },
-    edit: function (props) {
-      var blockProps = useBlockProps({ className: "jankx-account-sidebar-editor" });
-      return el("div", blockProps,
-        el(InnerBlocks, {
-          template: [
-            ["jankx/sidebar-header", {}],
-            ["jankx/sidebar-nav", {}]
-          ],
-          templateLock: false,
-          orientation: "vertical"
-        })
-      );
-    },
-    save: function () { return null; }
-  });
-
-  // Account Content — auto-injects tabs via PHP, ServerSideRender in editor
-  registerBlockType("jankx/account-content", {
-    apiVersion: 3,
-    title: __("Account Content", "jankx"),
-    icon: "editor-expand",
-    category: "jankx",
-    ancestor: ["jankx/my-account"],
-    attributes: {},
-    supports: { html: false, spacing: { padding: true, margin: true } },
-    edit: function (props) {
-      var blockProps = useBlockProps({ className: "jankx-account-content-editor" });
-      return el("div", blockProps,
-        el(ServerSideRender, { block: "jankx/account-content", attributes: props.attributes })
-      );
-    },
-    save: function () { return null; }
-  });
-
-  // ──────────────────────────────────────
-  // CONTENT BLOCKS — use ServerSideRender
-  // ──────────────────────────────────────
-
-  var contentBlocks = [
-    {
-      name: "jankx/sidebar-header",
-      title: __("Sidebar Header", "jankx"),
-      icon: "admin-users",
-      category: "jankx",
-      ancestor: ["jankx/my-account"],
-      attrs: {
-        showAvatar: { type: "boolean", default: true },
-        showName: { type: "boolean", default: true },
-        showMembershipBadge: { type: "boolean", default: true },
-        showEditLink: { type: "boolean", default: true }
-      },
-      supports: { html: false }
-    },
-    {
-      name: "jankx/sidebar-nav",
-      title: __("Sidebar Navigation", "jankx"),
-      icon: "menu",
-      category: "jankx",
-      ancestor: ["jankx/my-account"],
-      attrs: {},
-      supports: { html: false }
+  // Register blocks that lack editorScript in block.json.
+  // Metadata is passed from PHP via wp_localize_script.
+  var blockMetadata = window.jankxMyAccountBlockMetadata || {};
+  Object.keys(blockMetadata).forEach(function (blockName) {
+    // Skip if already registered client-side (has editorScript)
+    if (select('core/blocks').getBlockType(blockName)) {
+      return;
     }
-  ];
-
-  contentBlocks.forEach(function (b) {
-    registerBlockType(b.name, {
-      apiVersion: 3,
-      title: b.title,
-      icon: b.icon,
-      category: b.category,
-      ancestor: b.ancestor,
-      attributes: b.attrs,
-      supports: b.supports,
-      edit: function (props) {
-        var blockProps = useBlockProps({ className: "jankx-server-rendered" });
-        return el("div", blockProps,
-          el(ServerSideRender, { block: b.name, attributes: props.attributes })
-        );
-      },
-      save: function () { return null; }
-    });
+    registerBlockType(blockName, blockMetadata[blockName]);
   });
+
+  // ──────────────────────────────────────────────────────────
+  // Inject edit functions via filter — runs at registration time,
+  // before Gutenberg parses the saved post content.
+  // ──────────────────────────────────────────────────────────
+  addFilter(
+    'blocks.registerBlockType',
+    'jankx/my-account-editor-inject',
+    function (settings, name) {
+
+      // jankx/my-account — container with InnerBlocks
+      if (name === 'jankx/my-account') {
+        settings.edit = function () {
+          var blockProps = useBlockProps({ className: 'jankx-my-account-editor' });
+          return el('div', blockProps,
+            el('div', { className: 'jankx-account-layout' },
+              el(InnerBlocks, {
+                templateLock: false,
+                orientation: 'vertical'
+              })
+            )
+          );
+        };
+        settings.save = function (_props) {
+          return el(InnerBlocks.Content);
+        };
+      }
+
+      // jankx/account-sidebar — container with InnerBlocks
+      if (name === 'jankx/account-sidebar') {
+        // Override parent → ancestor so block can be placed inside
+        // my-account at any nesting level (e.g. inside core/columns).
+        delete settings.parent;
+        settings.ancestor = ['jankx/my-account'];
+        settings.edit = function () {
+          var blockProps = useBlockProps({ className: 'jankx-account-sidebar-editor' });
+          return el('div', blockProps,
+            el(InnerBlocks, {
+              template: [
+                ['jankx/sidebar-header', {}],
+                ['jankx/sidebar-nav', {}]
+              ],
+              templateLock: false,
+              orientation: 'vertical'
+            })
+          );
+        };
+        settings.save = function (_props) {
+          return el(InnerBlocks.Content);
+        };
+      }
+
+      // jankx/account-content — server-side render preview
+      if (name === 'jankx/account-content') {
+        delete settings.parent;
+        settings.ancestor = ['jankx/my-account'];
+        settings.edit = function (props) {
+          var blockProps = useBlockProps({ className: 'jankx-account-content-editor' });
+          return el('div', blockProps,
+            el(SSR, { block: 'jankx/account-content', attributes: props.attributes })
+          );
+        };
+        settings.save = function () { return null; };
+      }
+
+      // jankx/sidebar-header — server-side render preview
+      if (name === 'jankx/sidebar-header') {
+        settings.edit = function (props) {
+          var blockProps = useBlockProps({ className: 'jankx-server-rendered' });
+          return el('div', blockProps,
+            el(SSR, { block: 'jankx/sidebar-header', attributes: props.attributes })
+          );
+        };
+        settings.save = function () { return null; };
+      }
+
+      // jankx/sidebar-nav — server-side render preview
+      if (name === 'jankx/sidebar-nav') {
+        settings.edit = function (props) {
+          var blockProps = useBlockProps({ className: 'jankx-server-rendered' });
+          return el('div', blockProps,
+            el(SSR, { block: 'jankx/sidebar-nav', attributes: props.attributes })
+          );
+        };
+        settings.save = function () { return null; };
+      }
+
+      return settings;
+    }
+  );
+
 })();

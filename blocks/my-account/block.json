@@ -7,6 +7,7 @@
     "icon": "admin-users",
     "description": "Container block for My Account page. Accepts any block.",
     "textdomain": "jankx",
+    "editorScript": "file:./build/index.tsx.js",
     "attributes": {
         "layout": {
             "type": "string",

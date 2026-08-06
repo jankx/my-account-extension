@@ -11,16 +11,13 @@ class MyAccountBlock extends Block
             return $this->renderLoginPrompt();
         }
 
-        $layout = $attributes['layout'] ?? 'sidebar-content';
-
         $wrapperAttrs = get_block_wrapper_attributes([
-            'class' => 'jankx-my-account-block layout-' . esc_attr($layout),
+            'class' => 'jankx-my-account-block',
         ]);
 
         $output = sprintf('<div %s>', $wrapperAttrs);
-        $output .= '<div class="jankx-account-layout">';
         $output .= $content;
-        $output .= '</div></div>';
+        $output .= '</div>';
 
         return $output;
     }

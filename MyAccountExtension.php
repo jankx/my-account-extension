@@ -371,18 +371,29 @@ class MyAccountExtension extends AbstractExtension
 
     public function enqueueBlockEditorAssets(): void
     {
-        $screen = get_current_screen();
-        if (!$screen || $screen->base !== 'post' || $screen->post_type !== 'page') {
-            return;
-        }
-
         wp_enqueue_script(
             'jankx-my-account-blocks-editor',
             $this->get_extension_url() . '/assets/blocks-editor.js',
-            ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n', 'wp-server-side-render'],
+            ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-hooks'],
             filemtime($this->get_extension_path() . '/assets/blocks-editor.js'),
             true
         );
+
+        // Pass block metadata for blocks without editorScript so they can be
+        // registered client-side and the blocks.registerBlockType filter fires.
+        $blocksDir = $this->get_extension_path() . '/blocks';
+        $blockSlugs = ['account-content', 'sidebar-header', 'sidebar-nav', 'content-header'];
+        $blockMetadata = [];
+        foreach ($blockSlugs as $slug) {
+            $blockJson = $blocksDir . '/' . $slug . '/block.json';
+            if (file_exists($blockJson)) {
+                $metadata = json_decode(file_get_contents($blockJson), true);
+                if ($metadata) {
+                    $blockMetadata[$metadata['name']] = $metadata;
+                }
+            }
+        }
+        wp_localize_script('jankx-my-account-blocks-editor', 'jankxMyAccountBlockMetadata', $blockMetadata);
 
         wp_enqueue_style(
             'jankx-my-account-blocks-editor',

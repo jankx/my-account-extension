@@ -26,16 +26,6 @@
     --jankx-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-/* Layout */
-.jankx-account-layout {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px;
-}
-
 /* Sidebar */
 .jankx-account-sidebar {
     background: #fff;
@@ -589,10 +579,6 @@
 
 /* Responsive */
 @media screen and (max-width: 960px) {
-    .jankx-account-layout {
-        grid-template-columns: 1fr;
-    }
-
     .jankx-account-sidebar {
         order: -1;
     }
@@ -616,10 +602,6 @@
 }
 
 @media screen and (max-width: 600px) {
-    .jankx-account-layout {
-        padding: 16px;
-    }
-
     .jankx-form-row {
         grid-template-columns: 1fr;
     }

@@ -7,7 +7,7 @@
     "icon": "menu",
     "description": "Navigation menu for account tabs.",
     "textdomain": "jankx",
-    "ancestor": ["jankx/my-account"],
+    "parent": ["jankx/account-sidebar"],
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
