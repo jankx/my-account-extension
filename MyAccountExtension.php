@@ -13,6 +13,14 @@ class MyAccountExtension extends AbstractExtension
     {
         self::$instance = $this;
 
+        // Overview — default tab (priority 0 = first)
+        self::registerSubPage('overview', [
+            'label' => 'Overview',
+            'icon' => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+            'priority' => 0,
+            'callback' => [new \Jankx\Extensions\MyAccount\Shortcode\OverviewTab(), 'render'],
+        ]);
+
         // Register core sub-pages
         self::registerSubPage('profile', [
             'label' => 'Profile',
@@ -89,10 +97,9 @@ class MyAccountExtension extends AbstractExtension
         // Intercept sub-page requests
         add_action('template_redirect', [$this, 'handleSubPage']);
 
-        // Always register blocks so ServerSideRender works in editor
-        $this->registerBlocks();
-
         if (is_admin()) {
+            $this->registerBlocks();
+
             $settingsPage = new \Jankx\Extensions\MyAccount\Admin\SettingsPage();
             $settingsPage->register();
 
@@ -110,6 +117,11 @@ class MyAccountExtension extends AbstractExtension
 
         // Inject My Account sub-pages into User Menu block dropdown
         add_filter('jankx/user_menu/items', [$this, 'addMyAccountMenuItems'], 20, 2);
+
+        // Default overview section callbacks
+        add_action('jankx/my_account/overview/membership', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderMembership']);
+        add_action('jankx/my_account/overview/quick_links', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderQuickLinks']);
+        add_action('jankx/my_account/overview/qa', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderQA']);
     }
 
     /**

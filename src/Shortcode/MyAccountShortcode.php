@@ -25,7 +25,7 @@ class MyAccountShortcode
         // Detect active tab from query var (sub-page) or GET param
         $activeTab = get_query_var('jankx_account_page');
         if (empty($activeTab)) {
-            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'profile';
+            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
         }
 
         ob_start();
@@ -210,6 +210,9 @@ class MyAccountShortcode
 
         // Fallback to built-in tab rendering
         switch ($activeTab) {
+            case 'overview':
+                $this->renderOverviewTab($user);
+                break;
             case 'coupons':
                 $this->renderCouponsTab($user);
                 break;
@@ -233,6 +236,12 @@ class MyAccountShortcode
                 $this->renderProfileTab($user);
                 break;
         }
+    }
+
+    protected function renderOverviewTab($user): void
+    {
+        $overview = new OverviewTab();
+        $overview->render($user);
     }
 
     protected function renderProfileTab($user): void

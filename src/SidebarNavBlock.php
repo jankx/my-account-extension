@@ -13,7 +13,7 @@ class SidebarNavBlock extends Block
 
         $activeTab = get_query_var('jankx_account_page');
         if (empty($activeTab)) {
-            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'profile';
+            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
         }
 
         $subPages = $this->getSubPages();

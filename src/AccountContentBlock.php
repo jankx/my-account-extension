@@ -38,15 +38,20 @@ class AccountContentBlock extends Block
     {
         $activeTab = get_query_var('jankx_account_page');
         if (empty($activeTab)) {
-            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'profile';
+            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
         }
         return $activeTab;
     }
 
     protected function renderTab(string $tab): string
     {
-        $block = new AccountTabProfileBlock();
         switch ($tab) {
+            case 'overview':
+                $overview = new \Jankx\Extensions\MyAccount\Shortcode\OverviewTab();
+                ob_start();
+                $overview->render(wp_get_current_user());
+                return ob_get_clean();
+
             case 'orders':
                 if (class_exists(\Jankx\Extensions\Travel\Blocks\AccountTabOrdersBlock::class)) {
                     $ordersBlock = new \Jankx\Extensions\Travel\Blocks\AccountTabOrdersBlock();
@@ -70,6 +75,7 @@ class AccountContentBlock extends Block
 
             case 'profile':
             default:
+                $block = new AccountTabProfileBlock();
                 return $block->render([]);
         }
     }

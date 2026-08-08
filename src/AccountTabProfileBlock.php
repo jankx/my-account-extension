@@ -20,7 +20,7 @@ class AccountTabProfileBlock extends Block
         // Only render if this is the active tab
         $activeTab = get_query_var('jankx_account_page');
         if (empty($activeTab)) {
-            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'profile';
+            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
         }
 
         $is_editor = defined('REST_REQUEST') && REST_REQUEST && !empty($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/block-renderer/') !== false;
