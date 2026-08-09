@@ -53,6 +53,10 @@ class AccountContentBlock extends Block
                 return ob_get_clean();
 
             case 'orders':
+                if (class_exists(\Jankx\Extensions\Ecommerce\Blocks\AccountTabOrdersBlock::class)) {
+                    $ordersBlock = new \Jankx\Extensions\Ecommerce\Blocks\AccountTabOrdersBlock();
+                    return $ordersBlock->render([]);
+                }
                 if (class_exists(\Jankx\Extensions\Travel\Blocks\AccountTabOrdersBlock::class)) {
                     $ordersBlock = new \Jankx\Extensions\Travel\Blocks\AccountTabOrdersBlock();
                     return $ordersBlock->render([]);
@@ -74,9 +78,17 @@ class AccountContentBlock extends Block
                 return $this->renderEmptyTab('credits');
 
             case 'profile':
-            default:
                 $block = new AccountTabProfileBlock();
                 return $block->render([]);
+
+            default:
+                // Tabs injected by other extensions through the sub-page API
+                // render via their registered callback when available.
+                $subPage = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPage($tab);
+                if ($subPage && !empty($subPage['callback']) && is_callable($subPage['callback'])) {
+                    return call_user_func($subPage['callback'], wp_get_current_user());
+                }
+                return $this->renderEmptyTab($tab);
         }
     }
 
