@@ -25,7 +25,23 @@ class MyAccountShortcode
         // Detect active tab from query var (sub-page) or GET param
         $activeTab = get_query_var('jankx_account_page');
         if (empty($activeTab)) {
-            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
+            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : '';
+        }
+
+        // Fallback: parse URL directly
+        if (empty($activeTab)) {
+            $pageId = get_option('jankx_my_account_page_id', 0);
+            if ($pageId) {
+                $requestUri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+                $slug = get_page_uri($pageId);
+                if ($slug && preg_match('#^' . preg_quote($slug, '#') . '/([a-zA-Z0-9_-]+)#i', $requestUri, $m)) {
+                    $activeTab = $m[1];
+                }
+            }
+        }
+
+        if (empty($activeTab)) {
+            $activeTab = 'overview';
         }
 
         ob_start();

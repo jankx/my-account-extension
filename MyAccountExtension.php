@@ -96,6 +96,7 @@ class MyAccountExtension extends AbstractExtension
 
         // Intercept sub-page requests
         add_action('template_redirect', [$this, 'handleSubPage']);
+        add_filter('template_include', [$this, 'loadAccountTemplate']);
 
         if (is_admin()) {
             add_action('init', [$this, 'registerBlocks']);
@@ -305,17 +306,25 @@ class MyAccountExtension extends AbstractExtension
      */
     public function handleSubPage(): void
     {
-        $subPage = get_query_var('jankx_account_page');
-        if (empty($subPage)) {
-            return;
-        }
-
-        if (!self::isValidSubPage($subPage)) {
-            return;
-        }
-
         $pageId = get_option('jankx_my_account_page_id', 0);
         if (!$pageId) {
+            return;
+        }
+
+        // Parse URL directly to detect sub-page
+        $requestUri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+        $slug = get_page_uri($pageId);
+        if (!$slug) {
+            return;
+        }
+
+        if (!preg_match('#^' . preg_quote($slug, '#') . '/([a-zA-Z0-9_-]+)#i', $requestUri, $m)) {
+            return;
+        }
+
+        $subPage = $m[1];
+
+        if (!self::isValidSubPage($subPage)) {
             return;
         }
 
@@ -340,6 +349,34 @@ class MyAccountExtension extends AbstractExtension
 
         // Prevent redirect loop
         remove_action('template_redirect', [$this, 'handleSubPage']);
+    }
+
+    /**
+     * Force load the My Account page template for sub-pages
+     */
+    public function loadAccountTemplate(string $template): string
+    {
+        if (!is_page()) {
+            return $template;
+        }
+
+        $pageId = get_option('jankx_my_account_page_id', 0);
+        if (!$pageId) {
+            return $template;
+        }
+
+        $requestUri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+        $slug = get_page_uri($pageId);
+        if (!$slug) {
+            return $template;
+        }
+
+        if (!preg_match('#^' . preg_quote($slug, '#') . '/([a-zA-Z0-9_-]+)#i', $requestUri, $m)) {
+            return $template;
+        }
+
+        // Return the page template for the My Account page
+        return get_page_template_slug($pageId) ?: get_page_template();
     }
 
     /**
