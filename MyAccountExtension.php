@@ -98,7 +98,7 @@ class MyAccountExtension extends AbstractExtension
         add_action('template_redirect', [$this, 'handleSubPage']);
 
         if (is_admin()) {
-            $this->registerBlocks();
+            add_action('init', [$this, 'registerBlocks']);
 
             $settingsPage = new \Jankx\Extensions\MyAccount\Admin\SettingsPage();
             $settingsPage->register();
