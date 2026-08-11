@@ -210,39 +210,36 @@ class OverviewTab
 
     /**
      * Default Q&A section renderer.
+     *
+     * The FAQ items come from the `jankx/my_account/overview/qa/faqs` filter
+     * (e.g. supplied dynamically by the FAQ extension) instead of being
+     * hardcoded. The section is skipped when no FAQ is provided.
      */
     public static function renderQA($user): void
     {
-        $faqs = [
-            [
-                'question' => __('How do I upgrade my membership?', 'jankx'),
-                'answer'   => __('Earn points by booking tours. Each booking earns points based on the total value. Reach the required points to automatically upgrade your tier.', 'jankx'),
-            ],
-            [
-                'question' => __('How do I change my password?', 'jankx'),
-                'answer'   => __('Go to Profile > Change Password. You can update your password anytime from your account settings.', 'jankx'),
-            ],
-            [
-                'question' => __('How do I cancel a booking?', 'jankx'),
-                'answer'   => __('Contact our support team for cancellation requests. Cancellation policies depend on the tour and departure date.', 'jankx'),
-            ],
-            [
-                'question' => __('What are the benefits of each tier?', 'jankx'),
-                'answer'   => __('Bronze: Basic access. Silver: Exclusive deals and priority support. Gold: VIP service, free upgrades, and special events.', 'jankx'),
-            ],
-        ];
-
         /**
          * Filter the Q&A items on the overview page.
          *
          * @param array   $faqs Array of ['question', 'answer'] items.
          * @param WP_User $user Current user object.
          */
-        $faqs = apply_filters('jankx/my_account/overview/qa/faqs', $faqs, $user);
+        $faqs = apply_filters('jankx/my_account/overview/qa/faqs', [], $user);
+
+        if (empty($faqs)) {
+            return;
+        }
+
+        /**
+         * Filter the Q&A section title on the overview page.
+         *
+         * @param string  $title Section title.
+         * @param WP_User $user  Current user object.
+         */
+        $title = apply_filters('jankx/my_account/overview/qa/title', __('Frequently Asked Questions', 'jankx'), $user);
         ?>
         <div class="jankx-overview-section jankx-overview-qa">
             <h3 class="jankx-overview-section-title">
-                <?php _e('Frequently Asked Questions', 'jankx'); ?>
+                <?php echo esc_html($title); ?>
             </h3>
             <div class="jankx-qa-list">
                 <?php foreach ($faqs as $faq): ?>

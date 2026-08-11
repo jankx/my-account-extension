@@ -344,7 +344,8 @@ class MyAccountExtension extends AbstractExtension
         $wp_query->is_404 = false;
         $post = $accountPage;
 
-        // Set the sub-page for the shortcode
+        // Set the sub-page query var and GET param
+        $wp_query->query_vars['jankx_account_page'] = $subPage;
         $_GET['tab'] = $subPage;
 
         // Prevent redirect loop
