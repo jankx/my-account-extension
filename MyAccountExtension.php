@@ -94,6 +94,9 @@ class MyAccountExtension extends AbstractExtension
         add_action('init', [$this, 'addRewriteRules']);
         add_action('init', [$this, 'addQueryVars']);
 
+        // Auto-flush rewrite rules once if our rules are missing
+        add_action('init', [$this, 'maybeFlushRewriteRules'], 999);
+
         // Intercept sub-page requests
         add_action('template_redirect', [$this, 'handleSubPage']);
         add_filter('template_include', [$this, 'loadAccountTemplate']);
@@ -267,6 +270,7 @@ class MyAccountExtension extends AbstractExtension
     public function addQueryVars(): void
     {
         add_rewrite_tag('%jankx_account_page%', '([a-zA-Z0-9_-]+)');
+        add_rewrite_tag('%order%', '([a-zA-Z0-9_-]+)');
     }
 
     /**
@@ -279,11 +283,44 @@ class MyAccountExtension extends AbstractExtension
             return;
         }
 
+        // Sub-page: tai-khoan-cua-toi/orders/
         add_rewrite_rule(
             '^' . preg_quote($slug, '/') . '/([a-zA-Z0-9_-]+)/?$',
             'index.php?page=' . $slug . '&jankx_account_page=$matches[1]',
             'top'
         );
+
+        // Order detail: tai-khoan-cua-toi/orders/OD-000006/
+        add_rewrite_rule(
+            '^' . preg_quote($slug, '/') . '/orders/([a-zA-Z0-9_-]+)/?$',
+            'index.php?page=' . $slug . '&jankx_account_page=orders&order=$matches[1]',
+            'top'
+        );
+    }
+
+    /**
+     * Flush rewrite rules once if our custom rules are missing
+     */
+    public function maybeFlushRewriteRules(): void
+    {
+        if (wp_doing_ajax() || is_admin()) {
+            return;
+        }
+
+        $optionKey = 'jankx_my_account_rewrite_flushed_v2';
+        if (get_option($optionKey)) {
+            return;
+        }
+
+        global $wp_rewrite;
+        $rules = $wp_rewrite->rules;
+        $slug = $this->getPageSlug();
+
+        if ($slug && !isset($rules['^' . $slug . '/([a-zA-Z0-9_-]+)/?$'])) {
+            flush_rewrite_rules();
+        }
+
+        update_option($optionKey, true);
     }
 
     /**
@@ -386,9 +423,6 @@ class MyAccountExtension extends AbstractExtension
     public function install(): bool
     {
         $this->createAccountPage();
-
-        // Flush rewrite rules to register sub-page slugs
-        flush_rewrite_rules();
 
         return parent::install();
     }
