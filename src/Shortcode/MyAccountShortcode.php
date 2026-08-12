@@ -351,19 +351,20 @@ class MyAccountShortcode
             <?php else : ?>
                 <div class="jankx-orders-list">
                     <?php foreach ($orders as $order) :
-                        $status = get_post_meta($order->ID, '_booking_status', true);
+                        $status = $order['status'] ?? 'pending';
                         $statusClass = $this->getStatusClass($status);
-                        $total = get_post_meta($order->ID, '_booking_total', true);
-                        $departureDate = get_post_meta($order->ID, '_departure_date', true);
-                        $quantity = get_post_meta($order->ID, '_booking_quantity', true);
-                        $tourId = get_post_meta($order->ID, '_tour_id', true);
-                        $tourTitle = $tourId ? get_the_title($tourId) : 'N/A';
-                        $tourImage = $tourId ? get_the_post_thumbnail_url($tourId, 'thumbnail') : '';
+                        $total = $order['total'] ?? 0;
+                        $items = is_string($order['items'] ?? '') ? json_decode($order['items'], true) : ($order['items'] ?? []);
+                        $firstItem = $items[0] ?? null;
+                        $tourTitle = $firstItem['name'] ?? 'N/A';
+                        $quantity = $firstItem['quantity'] ?? 1;
+                        $createdAt = $order['created_at'] ?? '';
+                        $orderNumber = $order['order_number'] ?? '';
                     ?>
                     <div class="jankx-order-card">
                         <div class="jankx-order-image">
-                            <?php if ($tourImage): ?>
-                                <img src="<?php echo esc_url($tourImage); ?>" alt="<?php echo esc_attr($tourTitle); ?>">
+                            <?php if (!empty($firstItem['image'])): ?>
+                                <img src="<?php echo esc_url($firstItem['image']); ?>" alt="<?php echo esc_attr($tourTitle); ?>">
                             <?php else: ?>
                                 <div class="jankx-order-placeholder">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
@@ -377,10 +378,11 @@ class MyAccountShortcode
                         <div class="jankx-order-info">
                             <h3 class="jankx-order-title"><?php echo esc_html($tourTitle); ?></h3>
                             <p class="jankx-order-meta">
+                                <span class="jankx-order-number">#<?php echo esc_html($orderNumber); ?></span>
                                 <span class="jankx-order-date">
-                                    <?php echo $departureDate ? esc_html(date('d/m/Y', strtotime($departureDate))) : '—'; ?>
+                                    <?php echo $createdAt ? esc_html(date('d/m/Y', strtotime($createdAt))) : '—'; ?>
                                 </span>
-                                <span class="jankx-order-qty">Qty: <?php echo esc_html($quantity ?: '1'); ?></span>
+                                <span class="jankx-order-qty">Qty: <?php echo esc_html($quantity); ?></span>
                             </p>
                         </div>
                         <div class="jankx-order-price">
@@ -530,36 +532,16 @@ class MyAccountShortcode
 
     protected function getUserOrders(int $userId): array
     {
-        $postTypes = ['jankx_booking', 'booking'];
-        $foundPostType = null;
-
-        foreach ($postTypes as $pt) {
-            if (post_type_exists($pt)) {
-                $foundPostType = $pt;
-                break;
-            }
-        }
-
-        if (!$foundPostType) {
+        if (!class_exists(\Jankx\Extensions\Ecommerce\Order\OrderModel::class)) {
             return [];
         }
 
-        $query = new \WP_Query([
-            'post_type' => $foundPostType,
-            'post_status' => ['publish', 'pending', 'completed'],
-            'meta_query' => [
-                [
-                    'key' => '_customer_id',
-                    'value' => $userId,
-                    'compare' => '=',
-                ],
-            ],
-            'posts_per_page' => get_option('jankx_my_account_booking_per_page', 10),
-            'orderby' => 'date',
+        return \Jankx\Extensions\Ecommerce\Order\OrderModel::query([
+            'customer_id' => $userId,
+            'per_page' => get_option('jankx_my_account_booking_per_page', 10),
+            'orderby' => 'created_at',
             'order' => 'DESC',
         ]);
-
-        return $query->posts;
     }
 
     protected function getCouponCount(): int
@@ -595,7 +577,13 @@ class MyAccountShortcode
 
     protected function getOrderCount(): int
     {
-        return count($this->getUserOrders(get_current_user_id()));
+        if (!class_exists(\Jankx\Extensions\Ecommerce\Order\OrderModel::class)) {
+            return 0;
+        }
+
+        return \Jankx\Extensions\Ecommerce\Order\OrderModel::count([
+            'customer_id' => get_current_user_id(),
+        ]);
     }
 
     protected function getStatusClass(string $status): string
