@@ -131,6 +131,12 @@ class AccountTabProfileBlock extends Block
         wp_localize_script('jankx-my-account', 'jankxMyAccount', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('jankx_my_account_nonce'),
+            'i18n' => [
+                'saving' => 'Đang lưu...',
+                'saved' => 'Đã lưu thành công!',
+                'error' => 'Có lỗi xảy ra. Vui lòng thử lại.',
+                'uploading' => 'Đang tải lên...',
+            ],
         ]);
     }
 }
