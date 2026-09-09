@@ -109,6 +109,10 @@ class MyAccountExtension extends AbstractExtension
 
             // Enqueue block editor script (handles client-side block registration)
             add_action('enqueue_block_editor_assets', [$this, 'enqueueBlockEditorAssets']);
+
+            // Editor styles must go through enqueue_block_assets to work inside
+            // the Gutenberg editor iframe (WordPress 6.6+).
+            add_action('enqueue_block_assets', [$this, 'enqueueBlockEditorStyles']);
         } else {
             add_action('template_redirect', [$this, 'maybeRegisterFrontendBlocks']);
         }
@@ -478,6 +482,17 @@ class MyAccountExtension extends AbstractExtension
             }
         }
         wp_localize_script('jankx-my-account-blocks-editor', 'jankxMyAccountBlockMetadata', $blockMetadata);
+    }
+
+    /**
+     * Enqueue editor styles via enqueue_block_assets so they work inside
+     * the Gutenberg editor iframe (WordPress 6.6+).
+     */
+    public function enqueueBlockEditorStyles(): void
+    {
+        if (!is_admin()) {
+            return;
+        }
 
         wp_enqueue_style(
             'jankx-my-account-blocks-editor',
