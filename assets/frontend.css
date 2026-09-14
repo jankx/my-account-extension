@@ -1364,3 +1364,117 @@
         padding: 16px;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   Email Verification
+   ══════════════════════════════════════════════════════════════ */
+
+.jankx-email-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--jankx-success);
+    margin-top: 6px;
+}
+
+.jankx-email-verified svg {
+    flex-shrink: 0;
+}
+
+.jankx-email-unverified {
+    display: block;
+    font-size: 12px;
+    color: var(--jankx-danger);
+    margin-top: 6px;
+}
+
+.jankx-verify-email-link {
+    color: var(--jankx-primary);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.jankx-verify-email-link:hover {
+    text-decoration: underline;
+}
+
+.jankx-email-verify-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #FEF3C7;
+    border: 1px solid #FCD34D;
+    border-radius: var(--jankx-radius-sm);
+    margin-bottom: 24px;
+}
+
+.jankx-verify-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #F59E0B;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.jankx-verify-content {
+    flex: 1;
+}
+
+.jankx-verify-content strong {
+    display: block;
+    font-size: 14px;
+    color: var(--jankx-gray-800);
+    margin-bottom: 2px;
+}
+
+.jankx-verify-content p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--jankx-gray-600);
+}
+
+.jankx-btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.jankx-btn-verify-send {
+    background: var(--jankx-primary);
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.jankx-btn-verify-send:hover {
+    background: var(--jankx-primary-dark);
+}
+
+.jankx-btn-verify-send:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.jankx-verify-success {
+    background: #D1FAE5;
+    border-color: #6EE7B7;
+}
+
+.jankx-verify-success .jankx-verify-icon {
+    background: var(--jankx-success);
+}
+
+.jankx-verify-success .jankx-verify-content strong {
+    color: #065F46;
+}
+
+.jankx-verify-success .jankx-verify-content p {
+    color: #047857;
+}

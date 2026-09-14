@@ -85,10 +85,14 @@ class MyAccountExtension extends AbstractExtension
         $shortcode = new \Jankx\Extensions\MyAccount\Shortcode\MyAccountShortcode();
         $shortcode->register();
 
+        $emailVerification = new \Jankx\Extensions\MyAccount\Verification\EmailVerificationHandler();
+        $emailVerification->register();
+
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('wp_ajax_jankx_update_profile', [$this, 'ajaxUpdateProfile']);
         add_action('wp_ajax_jankx_upload_avatar', [$this, 'ajaxUploadAvatar']);
         add_action('wp_ajax_jankx_change_password', [$this, 'ajaxChangePassword']);
+        add_action('wp_ajax_jankx_send_verify_email', [$emailVerification, 'ajaxSendVerification']);
 
         // Rewrite rules for sub-pages
         add_action('init', [$this, 'addRewriteRules']);

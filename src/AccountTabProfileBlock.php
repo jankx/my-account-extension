@@ -50,14 +50,16 @@ class AccountTabProfileBlock extends Block
         );
         $output .= '</div>';
 
-        $output .= '<div class="jankx-form-row">';
         $output .= '<div class="jankx-form-group">';
         $output .= '<label for="jankx-email">Email</label>';
         $output .= sprintf(
             '<input type="email" id="jankx-email" name="email" value="%s" required>',
             esc_attr($user->user_email)
         );
+        $output .= $this->renderEmailVerificationStatus($user->ID);
         $output .= '</div>';
+
+        $output .= '<div class="jankx-form-row">';
 
         $output .= '<div class="jankx-form-group">';
         $output .= '<label for="jankx-phone">Phone Number</label>';
@@ -109,6 +111,25 @@ class AccountTabProfileBlock extends Block
         $this->enqueueAssets();
 
         return $output;
+    }
+
+    protected function renderEmailVerificationStatus(int $userId): string
+    {
+        $verificationService = \Jankx\Extensions\MyAccount\Verification\EmailVerificationService::getInstance();
+        $isVerified = $verificationService->isVerified($userId);
+
+        if ($isVerified) {
+            return '<span class="jankx-email-verified">'
+                . '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+                . ' Đã xác nhận</span>';
+        }
+
+        $nonce = wp_create_nonce(\Jankx\Extensions\MyAccount\Verification\EmailVerificationHandler::NONCE_ACTION);
+
+        return '<span class="jankx-email-unverified">'
+            . 'Email chưa xác nhận '
+            . '<a href="#" class="jankx-verify-email-link" data-nonce="' . esc_attr($nonce) . '">Click để xác nhận</a>'
+            . '</span>';
     }
 
     protected function enqueueAssets(): void

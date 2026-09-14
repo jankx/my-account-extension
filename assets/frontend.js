@@ -22,6 +22,10 @@
             
             // Avatar upload
             $(document).on('change', '#jankx-avatar-input', this.handleAvatarUpload.bind(this));
+
+            // Email verification
+            $(document).on('click', '.jankx-verify-email-link', this.handleVerifyEmailClick.bind(this));
+            $(document).on('click', '.jankx-btn-verify-send', this.handleVerifySendClick.bind(this));
         },
 
         initTabs: function() {
@@ -155,6 +159,71 @@
                         </svg>
                         Đổi ảnh
                     `);
+                }
+            });
+        },
+
+        handleVerifyEmailClick: function(e) {
+            e.preventDefault();
+            
+            const $link = $(e.target);
+            const nonce = $link.data('nonce');
+            const $wrapper = $link.closest('.jankx-email-unverified');
+            
+            $link.text('Đang gửi...');
+            
+            $.ajax({
+                url: jankxMyAccount.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'jankx_send_verify_email',
+                    nonce: nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $wrapper.html('<span class="jankx-email-verify-sent">' + response.data.message + '</span>');
+                    } else {
+                        $link.text('Click để xác nhận');
+                        alert(response.data.message);
+                    }
+                },
+                error: function() {
+                    $link.text('Click để xác nhận');
+                    alert(jankxMyAccount.i18n.error);
+                }
+            });
+        },
+
+        handleVerifySendClick: function(e) {
+            e.preventDefault();
+            
+            const $btn = $(e.target);
+            const $banner = $btn.closest('.jankx-email-verify-banner');
+            const nonce = $banner.data('nonce');
+            
+            $btn.prop('disabled', true).text('Đang gửi...');
+            
+            $.ajax({
+                url: jankxMyAccount.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'jankx_send_verify_email',
+                    nonce: nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $banner.addClass('jankx-verify-success');
+                        $banner.find('.jankx-verify-content strong').text('Đã gửi email xác nhận');
+                        $banner.find('.jankx-verify-content p').text(response.data.message);
+                        $btn.remove();
+                    } else {
+                        $btn.prop('disabled', false).text('Gửi email xác nhận');
+                        alert(response.data.message);
+                    }
+                },
+                error: function() {
+                    $btn.prop('disabled', false).text('Gửi email xác nhận');
+                    alert(jankxMyAccount.i18n.error);
                 }
             });
         }
