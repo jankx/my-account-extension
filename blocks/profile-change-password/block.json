@@ -1,13 +1,14 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "jankx/account-tab-profile",
-    "title": "Profile Tab",
+    "name": "jankx/profile-change-password",
+    "title": "Change Password",
     "category": "jankx",
-    "icon": "id",
-    "description": "User profile information and password change form.",
+    "icon": "lock",
+    "description": "Password change form.",
     "textdomain": "jankx",
     "editorScript": "file:./build/index.tsx.js",
+    "parent": ["jankx/account-tab-profile"],
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
@@ -15,11 +16,5 @@
         "jankxHideOnMobile": { "type": "boolean", "default": false },
         "jankxFlexGrow": { "type": "boolean", "default": false }
     },
-    "supports": {
-        "html": false,
-        "inserter": false,
-        "align": false,
-        "spacing": false
-    },
-    "allowedBlocks": ["jankx/profile-personal-info", "jankx/profile-change-password"]
+    "supports": { "html": false, "inserter": false }
 }

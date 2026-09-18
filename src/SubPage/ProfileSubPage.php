@@ -26,6 +26,10 @@ class ProfileSubPage extends AbstractSubPage
 
     public function getContent(): string
     {
-        return '<!-- wp:jankx/account-tab-profile /-->';
+        return '<!-- wp:jankx/account-tab-profile -->'
+            . '<!-- wp:jankx/profile-personal-info /-->'
+            . '<!-- wp:separator {"className":"jankx-divider"} /-->'
+            . '<!-- wp:jankx/profile-change-password /-->'
+            . '<!-- /wp:jankx/account-tab-profile -->';
     }
 }

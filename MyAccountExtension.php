@@ -231,6 +231,8 @@ class MyAccountExtension extends AbstractExtension
             'content-header'  => \Jankx\Extensions\MyAccount\ContentHeaderBlock::class,
             'account-tab-profile' => \Jankx\Extensions\MyAccount\AccountTabProfileBlock::class,
             'account-tab-overview' => \Jankx\Extensions\MyAccount\Blocks\AccountTabOverviewBlock::class,
+            'profile-personal-info' => \Jankx\Extensions\MyAccount\Blocks\ProfilePersonalInfoBlock::class,
+            'profile-change-password' => \Jankx\Extensions\MyAccount\Blocks\ProfileChangePasswordBlock::class,
         ];
 
         foreach ($blockClasses as $blockName => $blockClass) {
