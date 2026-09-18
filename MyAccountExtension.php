@@ -17,13 +17,9 @@ class MyAccountExtension extends AbstractExtension
     {
         self::$instance = $this;
 
-        // Overview — default tab (priority 0 = first)
-        self::registerSubPage('overview', [
-            'label' => 'Overview',
-            'icon' => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-            'priority' => 0,
-            'callback' => [new \Jankx\Extensions\MyAccount\Shortcode\OverviewTab(), 'render'],
-        ]);
+        // Overview — default tab (priority 0 = first), now a Gutenberg block
+        // so its content is fully editable from WP Admin > Nibitour > My Account Pages.
+        self::registerSubPageClass(new \Jankx\Extensions\MyAccount\SubPage\OverviewSubPage());
 
         // Register core sub-pages through the class design pattern so their
         // default content can be edited as Gutenberg blocks in the admin.
@@ -114,6 +110,25 @@ class MyAccountExtension extends AbstractExtension
         return isset(self::$subPages[$slug]) || isset(self::$subPageObjects[$slug]);
     }
 
+    public function registerAdminMenu(): void
+    {
+        // Only register once — guard against duplicate calls from other extensions.
+        global $menu;
+        if (isset($menu['jankx-theme-options'])) {
+            return;
+        }
+
+        add_menu_page(
+            'Jankx Theme Options',
+            'Nibitour',
+            'manage_options',
+            'jankx-theme-options',
+            '__return_null',
+            'dashicons-tickets-alt',
+            3
+        );
+    }
+
     public function registerSubPagePostType(): void
     {
         SubPageManager::get_instance()->registerPostType();
@@ -126,6 +141,16 @@ class MyAccountExtension extends AbstractExtension
 
     public function register_hooks(): void
     {
+        // Shared top-level admin menu used by multiple extensions.
+        add_action('admin_menu', [$this, 'registerAdminMenu'], 1);
+
+        // Gutenberg blocks for My Account components.
+        if (did_action('init')) {
+            $this->registerBlocks();
+        } else {
+            add_action('init', [$this, 'registerBlocks']);
+        }
+
         $shortcode = new \Jankx\Extensions\MyAccount\Shortcode\MyAccountShortcode();
         $shortcode->register();
 
@@ -205,6 +230,7 @@ class MyAccountExtension extends AbstractExtension
             'account-content' => \Jankx\Extensions\MyAccount\AccountContentBlock::class,
             'content-header'  => \Jankx\Extensions\MyAccount\ContentHeaderBlock::class,
             'account-tab-profile' => \Jankx\Extensions\MyAccount\AccountTabProfileBlock::class,
+            'account-tab-overview' => \Jankx\Extensions\MyAccount\Blocks\AccountTabOverviewBlock::class,
         ];
 
         foreach ($blockClasses as $blockName => $blockClass) {

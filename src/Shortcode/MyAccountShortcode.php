@@ -234,9 +234,6 @@ class MyAccountShortcode
 
         // Fallback to built-in tab rendering
         switch ($activeTab) {
-            case 'overview':
-                $this->renderOverviewTab($user);
-                break;
             case 'coupons':
                 $this->renderCouponsTab($user);
                 break;
@@ -260,12 +257,6 @@ class MyAccountShortcode
                 $this->renderProfileTab($user);
                 break;
         }
-    }
-
-    protected function renderOverviewTab($user): void
-    {
-        $overview = new OverviewTab();
-        $overview->render($user);
     }
 
     protected function renderProfileTab($user): void

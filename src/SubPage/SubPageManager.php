@@ -38,7 +38,7 @@ class SubPageManager
             'publicly_queryable' => false,
             'exclude_from_search' => true,
             'show_ui' => true,
-            'show_in_menu' => false,
+            'show_in_menu' => 'jankx-theme-options',
             'show_in_nav_menus' => false,
             'show_in_rest' => true,
             'rest_base' => 'account-pages',

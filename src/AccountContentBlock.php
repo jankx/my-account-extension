@@ -54,12 +54,6 @@ class AccountContentBlock extends Block
         }
 
         switch ($tab) {
-            case 'overview':
-                $overview = new \Jankx\Extensions\MyAccount\Shortcode\OverviewTab();
-                ob_start();
-                $overview->render(wp_get_current_user());
-                return ob_get_clean();
-
             case 'orders':
                 if (class_exists(\Jankx\Extensions\Ecommerce\Blocks\AccountTabOrdersBlock::class)) {
                     $ordersBlock = new \Jankx\Extensions\Ecommerce\Blocks\AccountTabOrdersBlock();

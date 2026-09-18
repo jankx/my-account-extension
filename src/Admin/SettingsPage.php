@@ -23,21 +23,6 @@ class SettingsPage
             self::PAGE_SLUG,
             [$this, 'renderPage']
         );
-
-        add_submenu_page(
-            self::PAGE_SLUG,
-            __('Account Pages', 'jankx'),
-            __('Account Pages', 'jankx'),
-            'manage_options',
-            'jankx-account-pages',
-            [$this, 'renderAccountPages']
-        );
-    }
-
-    public function renderAccountPages(): void
-    {
-        wp_safe_redirect(admin_url('edit.php?post_type=' . \Jankx\Extensions\MyAccount\SubPage\SubPageManager::POST_TYPE));
-        exit;
     }
 
     public function registerSettings(): void
