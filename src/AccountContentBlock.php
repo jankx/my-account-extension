@@ -45,6 +45,14 @@ class AccountContentBlock extends Block
 
     protected function renderTab(string $tab): string
     {
+        $subPage = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPage($tab);
+        if ($subPage && !empty($subPage['post_id'])) {
+            $rendered = \Jankx\Extensions\MyAccount\SubPage\SubPageManager::get_instance()->renderPostContent($subPage['post_id']);
+            if ($rendered !== '') {
+                return $rendered;
+            }
+        }
+
         switch ($tab) {
             case 'overview':
                 $overview = new \Jankx\Extensions\MyAccount\Shortcode\OverviewTab();

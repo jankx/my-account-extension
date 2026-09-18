@@ -218,7 +218,15 @@ class MyAccountShortcode
     protected function renderTabContent(string $activeTab, $user): void
     {
         $subPage = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPage($activeTab);
-        
+
+        if ($subPage && !empty($subPage['post_id'])) {
+            $rendered = \Jankx\Extensions\MyAccount\SubPage\SubPageManager::get_instance()->renderPostContent($subPage['post_id']);
+            if ($rendered !== '') {
+                echo $rendered;
+                return;
+            }
+        }
+
         if ($subPage && isset($subPage['callback']) && is_callable($subPage['callback'])) {
             call_user_func($subPage['callback'], $user);
             return;

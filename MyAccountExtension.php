@@ -2,12 +2,16 @@
 namespace Jankx\Extensions\MyAccount;
 
 use Jankx\Extensions\AbstractExtension;
+use Jankx\Extensions\MyAccount\SubPage\AbstractSubPage;
+use Jankx\Extensions\MyAccount\SubPage\SubPageManager;
 
 class MyAccountExtension extends AbstractExtension
 {
     protected static $instance;
 
     protected static $subPages = [];
+
+    protected static $subPageObjects = [];
 
     public function init(): void
     {
@@ -21,13 +25,9 @@ class MyAccountExtension extends AbstractExtension
             'callback' => [new \Jankx\Extensions\MyAccount\Shortcode\OverviewTab(), 'render'],
         ]);
 
-        // Register core sub-pages
-        self::registerSubPage('profile', [
-            'label' => 'Profile',
-            'icon' => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-            'priority' => 10,
-            'callback' => [new \Jankx\Extensions\MyAccount\Shortcode\MyAccountShortcode(), 'renderProfileTab'],
-        ]);
+        // Register core sub-pages through the class design pattern so their
+        // default content can be edited as Gutenberg blocks in the admin.
+        self::registerSubPageClass(new \Jankx\Extensions\MyAccount\SubPage\ProfileSubPage());
     }
 
     public static function get_instance(): ?self
@@ -53,14 +53,40 @@ class MyAccountExtension extends AbstractExtension
     }
 
     /**
+     * Register a sub-page through the class design pattern. Sub-pages
+     * registered this way declare their default Gutenberg content, which is
+     * auto-registered as an editable content post the admin can customize.
+     */
+    public static function registerSubPageClass(AbstractSubPage $subPage): void
+    {
+        self::$subPageObjects[$subPage->getSlug()] = $subPage;
+    }
+
+    /**
      * Get all registered sub-pages sorted by priority
      */
     public static function getSubPages(): array
     {
         $pages = self::$subPages;
+
+        foreach (self::$subPageObjects as $slug => $subPage) {
+            $pages[$slug] = $subPage->toArray();
+        }
+
+        $manager = SubPageManager::get_instance();
+
+        foreach ($pages as $slug => &$page) {
+            $postId = $manager->getPostIdBySlug($slug);
+            if ($postId) {
+                $page['post_id'] = $postId;
+            }
+        }
+        unset($page);
+
         uasort($pages, function ($a, $b) {
             return ($a['priority'] ?? 100) <=> ($b['priority'] ?? 100);
         });
+
         return $pages;
     }
 
@@ -69,7 +95,15 @@ class MyAccountExtension extends AbstractExtension
      */
     public static function getSubPage(string $slug): ?array
     {
-        return self::$subPages[$slug] ?? null;
+        if (isset(self::$subPages[$slug])) {
+            return self::getSubPages()[$slug] ?? null;
+        }
+
+        if (isset(self::$subPageObjects[$slug])) {
+            return self::getSubPages()[$slug] ?? null;
+        }
+
+        return null;
     }
 
     /**
@@ -77,7 +111,17 @@ class MyAccountExtension extends AbstractExtension
      */
     public static function isValidSubPage(string $slug): bool
     {
-        return isset(self::$subPages[$slug]);
+        return isset(self::$subPages[$slug]) || isset(self::$subPageObjects[$slug]);
+    }
+
+    public function registerSubPagePostType(): void
+    {
+        SubPageManager::get_instance()->registerPostType();
+    }
+
+    public function syncSubPagePosts(): void
+    {
+        SubPageManager::get_instance()->sync(self::getSubPages());
     }
 
     public function register_hooks(): void
@@ -97,6 +141,13 @@ class MyAccountExtension extends AbstractExtension
         // Rewrite rules for sub-pages
         add_action('init', [$this, 'addRewriteRules']);
         add_action('init', [$this, 'addQueryVars']);
+
+        // Internal post type holding each sub-page's editable Gutenberg content
+        add_action('init', [$this, 'registerSubPagePostType'], 5);
+
+        // Auto-create/update the sub-page content posts once extensions have
+        // declared their sub-pages (init priority 99).
+        add_action('init', [$this, 'syncSubPagePosts'], 100);
 
         // Auto-flush rewrite rules once if our rules are missing
         add_action('init', [$this, 'maybeFlushRewriteRules'], 999);

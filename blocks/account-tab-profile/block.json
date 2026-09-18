@@ -8,7 +8,6 @@
     "description": "User profile information and password change form.",
     "textdomain": "jankx",
     "editorScript": "file:./build/index.tsx.js",
-    "parent": ["jankx/account-content"],
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },

@@ -23,6 +23,21 @@ class SettingsPage
             self::PAGE_SLUG,
             [$this, 'renderPage']
         );
+
+        add_submenu_page(
+            self::PAGE_SLUG,
+            __('Account Pages', 'jankx'),
+            __('Account Pages', 'jankx'),
+            'manage_options',
+            'jankx-account-pages',
+            [$this, 'renderAccountPages']
+        );
+    }
+
+    public function renderAccountPages(): void
+    {
+        wp_safe_redirect(admin_url('edit.php?post_type=' . \Jankx\Extensions\MyAccount\SubPage\SubPageManager::POST_TYPE));
+        exit;
     }
 
     public function registerSettings(): void
@@ -103,13 +118,12 @@ class SettingsPage
                         </th>
                         <td>
                             <?php
-                            wp_dropdown_posts([
+                            wp_dropdown_pages([
                                 'name' => 'jankx_my_account_page_id',
                                 'id' => 'jankx_my_account_page_id',
                                 'selected' => get_option('jankx_my_account_page_id', 0),
                                 'show_option_none' => __('— Chọn trang —', 'jankx'),
                                 'option_none_value' => 0,
-                                'post_type' => 'page',
                                 'class' => 'regular-text',
                             ]);
                             ?>
@@ -236,6 +250,55 @@ class SettingsPage
                     <span class="description"><?php esc_html_e('Vui lòng chọn trang My Account ở trên để xem trước.', 'jankx'); ?></span>
                     <?php endif; ?>
                 </p>
+            </div>
+
+            <div style="margin-top: 40px; padding: 20px; background: #fff; border: 1px solid #e2e4e7; border-radius: 8px; max-width: 700px;">
+                <h2 style="margin-top: 0;"><?php esc_html_e('Nội dung các trang con', 'jankx'); ?></h2>
+                <p class="description">
+                    <?php esc_html_e('Mỗi tab của trang My Account là một bài viết nội dung có thể chỉnh sửa bằng Gutenberg. Bạn có thể thay đổi toàn bộ nội dung, thêm banner, heading và các block tùy ý.', 'jankx'); ?>
+                </p>
+                <table class="widefat striped" style="margin-top: 12px;">
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e('Tab', 'jankx'); ?></th>
+                            <th><?php esc_html_e('Nhãn', 'jankx'); ?></th>
+                            <th><?php esc_html_e('Nội dung', 'jankx'); ?></th>
+                            <th><?php esc_html_e('Thao tác', 'jankx'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $subPages = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPages();
+                        $manager = \Jankx\Extensions\MyAccount\SubPage\SubPageManager::get_instance();
+
+                        foreach ($subPages as $slug => $page) :
+                            $editUrl = $manager->getEditUrl($slug);
+                            ?>
+                            <tr>
+                                <td><code><?php echo esc_html($slug); ?></code></td>
+                                <td><?php echo esc_html($page['label'] ?? $slug); ?></td>
+                                <td>
+                                    <?php if (!empty($page['post_id'])) : ?>
+                                        <a href="<?php echo esc_url(get_permalink($page['post_id']) ?: ''); ?>"
+                                           target="_blank"
+                                           class="description">
+                                            <?php esc_html_e('Xem nội dung', 'jankx'); ?>
+                                        </a>
+                                    <?php else : ?>
+                                        <span class="description"><?php esc_html_e('Không thể chỉnh sửa', 'jankx'); ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($editUrl) : ?>
+                                        <a href="<?php echo esc_url($editUrl); ?>" class="button button-small">
+                                            <?php esc_html_e('Chỉnh sửa', 'jankx'); ?>
+                                        </a>
+                                    <?php else : ?>—<?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
         <?php
