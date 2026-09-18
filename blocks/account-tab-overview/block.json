@@ -7,6 +7,7 @@
     "icon": "dashboard",
     "description": "Display the My Account overview dashboard with membership tier, quick links, and customizable sections.",
     "textdomain": "jankx",
+    "editorScript": "file:./build/index.tsx.js",
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
