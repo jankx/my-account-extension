@@ -83,6 +83,21 @@ class AccountContentBlock extends Block
                 $block = new AccountTabProfileBlock();
                 return $block->render([]);
 
+            case 'reviews':
+                if (class_exists(\Jankx\Extensions\ReviewSystem\Blocks\ReviewsPendingBlock::class)) {
+                    $pendingBlock = new \Jankx\Extensions\ReviewSystem\Blocks\ReviewsPendingBlock();
+                    $completedBlock = new \Jankx\Extensions\ReviewSystem\Blocks\ReviewsCompletedBlock();
+                    $myReviewsBlock = new \Jankx\Extensions\ReviewSystem\Blocks\ReviewsMyReviewsBlock();
+
+                    $output = '<div class="jankx-tab-panel jankx-tab-reviews">';
+                    $output .= $myReviewsBlock->render([]);
+                    $output .= $pendingBlock->render([]);
+                    $output .= $completedBlock->render([]);
+                    $output .= '</div>';
+                    return $output;
+                }
+                return $this->renderEmptyTab('reviews');
+
             default:
                 // Tabs injected by other extensions through the sub-page API
                 // render via their registered callback when available.
