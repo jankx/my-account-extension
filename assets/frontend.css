@@ -179,6 +179,10 @@
     border-left: 3px solid transparent;
 }
 
+.jankx-nav-item .jankx-nav-link {
+    display: flex;
+}
+
 .jankx-nav-item:hover {
     background: var(--jankx-gray-50);
     color: var(--jankx-primary);
