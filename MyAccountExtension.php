@@ -232,7 +232,9 @@ class MyAccountExtension extends AbstractExtension
             'account-menu-icon' => \Jankx\Extensions\MyAccount\Blocks\AccountMenuIconBlock::class,
             'account-menu-text' => \Jankx\Extensions\MyAccount\Blocks\AccountMenuTextBlock::class,
             'account-content' => \Jankx\Extensions\MyAccount\AccountContentBlock::class,
-            'content-header'  => \Jankx\Extensions\MyAccount\ContentHeaderBlock::class,
+            'account-content-header' => \Jankx\Extensions\MyAccount\Blocks\AccountContentHeaderBlock::class,
+            'account-content-body' => \Jankx\Extensions\MyAccount\Blocks\AccountContentBodyBlock::class,
+            'account-content-footer' => \Jankx\Extensions\MyAccount\Blocks\AccountContentFooterBlock::class,
             'account-tab-profile' => \Jankx\Extensions\MyAccount\AccountTabProfileBlock::class,
             'account-tab-overview' => \Jankx\Extensions\MyAccount\Blocks\AccountTabOverviewBlock::class,
             'profile-personal-info' => \Jankx\Extensions\MyAccount\Blocks\ProfilePersonalInfoBlock::class,
@@ -559,13 +561,15 @@ class MyAccountExtension extends AbstractExtension
         $blocksDir = $this->get_extension_path() . '/blocks';
         $blockSlugs = [
             'account-content',
+            'account-content-header',
+            'account-content-body',
+            'account-content-footer',
             'sidebar-header',
             'account-level-summary',
             'sidebar-nav',
             'account-menu-item',
             'account-menu-icon',
             'account-menu-text',
-            'content-header',
         ];
         $blockMetadata = [];
         foreach ($blockSlugs as $slug) {

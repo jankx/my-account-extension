@@ -761,3 +761,23 @@
 .jankx-overlay-control {
     margin-bottom: 8px;
 }
+
+/* Account Content sections - editor */
+.jankx-account-content-header-editor,
+.jankx-account-content-body-editor,
+.jankx-account-content-footer-editor {
+    position: relative;
+}
+
+.wp-block-jankx-account-content-header {
+    border-bottom: 1px dashed #dcdcde;
+}
+
+.wp-block-jankx-account-content-footer {
+    border-top: 1px dashed #dcdcde;
+    padding-top: 8px;
+}
+
+.wp-block-jankx-account-content-footer .block-editor-inner-blocks {
+    min-height: 32px;
+}

@@ -1,18 +1,13 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "jankx/account-content",
-    "title": "Account Content",
+    "name": "jankx/account-content-footer",
+    "title": "Account Content Footer",
     "category": "jankx",
-    "icon": "editor-expand",
-    "description": "Content area for account tabs.",
+    "icon": "arrow-down-alt2",
+    "description": "Footer section for account content.",
     "textdomain": "jankx",
-    "ancestor": ["jankx/my-account"],
-    "allowedBlocks": [
-        "jankx/account-content-header",
-        "jankx/account-content-body",
-        "jankx/account-content-footer"
-    ],
+    "parent": ["jankx/account-content"],
     "attributes": {
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
@@ -22,6 +17,7 @@
     },
     "supports": {
         "html": false,
+        "color": { "background": true, "text": true },
         "spacing": { "padding": true, "margin": true }
     }
 }

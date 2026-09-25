@@ -1,11 +1,11 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "jankx/content-header",
-    "title": "Content Header",
+    "name": "jankx/account-content-header",
+    "title": "Account Content Header",
     "category": "jankx",
-    "icon": "text",
-    "description": "Header section for account content area.",
+    "icon": "heading",
+    "description": "Heading header section for account content.",
     "textdomain": "jankx",
     "parent": ["jankx/account-content"],
     "attributes": {
@@ -15,5 +15,9 @@
         "jankxHideOnMobile": { "type": "boolean", "default": false },
         "jankxFlexGrow": { "type": "boolean", "default": false }
     },
-    "supports": { "html": false }
+    "supports": {
+        "html": false,
+        "color": { "background": true, "text": true },
+        "spacing": { "padding": true, "margin": true }
+    }
 }

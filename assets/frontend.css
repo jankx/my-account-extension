@@ -1563,3 +1563,10 @@
 .jankx-account-level-summary .jankx-membership-badge {
     margin: 0;
 }
+
+/* Account Content sections */
+.jankx-account-content-footer:not(:empty) {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}

@@ -1,6 +1,8 @@
 <?php
 namespace Jankx\Extensions\MyAccount;
 
+use Jankx\Extensions\MyAccount\Blocks\AccountContentBodyBlock;
+
 class AccountContentBlock extends Block
 {
     protected $blockId = 'jankx/account-content';
@@ -11,110 +13,28 @@ class AccountContentBlock extends Block
             return '';
         }
 
-        $user = wp_get_current_user();
-        $activeTab = $this->getActiveTab();
+        if (trim((string) $content) === '') {
+            $content = $this->renderFallbackContent();
+        }
 
         $wrapperAttrs = get_block_wrapper_attributes([
             'class' => 'jankx-account-content',
         ]);
 
-        $output = sprintf('<div %s>', $wrapperAttrs);
+        return sprintf('<div %s>%s</div>', $wrapperAttrs, $content);
+    }
 
-        // Welcome header
-        $output .= '<div class="jankx-content-header">';
+    protected function renderFallbackContent(): string
+    {
+        $user = wp_get_current_user();
+
+        $output = '<div class="jankx-content-header">';
         $output .= '<h1 class="jankx-account-title">' . esc_html__('My Account', 'jankx') . '</h1>';
         $output .= '<p class="jankx-account-welcome">' . sprintf(__('Welcome, %s!', 'jankx'), esc_html($user->display_name)) . '</p>';
         $output .= '</div>';
 
-        // Render active tab
-        $output .= $this->renderTab($activeTab);
-
-        $output .= '</div>';
+        $output .= (new AccountContentBodyBlock())->getTabContent();
 
         return $output;
-    }
-
-    protected function getActiveTab(): string
-    {
-        $activeTab = get_query_var('jankx_account_page');
-        if (empty($activeTab)) {
-            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
-        }
-        return $activeTab;
-    }
-
-    protected function renderTab(string $tab): string
-    {
-        $subPage = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPage($tab);
-        if ($subPage && !empty($subPage['post_id'])) {
-            $rendered = \Jankx\Extensions\MyAccount\SubPage\SubPageManager::get_instance()->renderPostContent($subPage['post_id']);
-            if ($rendered !== '') {
-                return $rendered;
-            }
-        }
-
-        switch ($tab) {
-            case 'orders':
-                if (class_exists(\Jankx\Extensions\Ecommerce\Blocks\AccountTabOrdersBlock::class)) {
-                    $ordersBlock = new \Jankx\Extensions\Ecommerce\Blocks\AccountTabOrdersBlock();
-                    return $ordersBlock->render([]);
-                }
-                if (class_exists(\Jankx\Extensions\Travel\Blocks\AccountTabOrdersBlock::class)) {
-                    $ordersBlock = new \Jankx\Extensions\Travel\Blocks\AccountTabOrdersBlock();
-                    return $ordersBlock->render([]);
-                }
-                return $this->renderEmptyTab('orders');
-
-            case 'coupons':
-                if (class_exists(\Jankx\Extensions\CouponSystem\Blocks\AccountTabCouponsBlock::class)) {
-                    $couponsBlock = new \Jankx\Extensions\CouponSystem\Blocks\AccountTabCouponsBlock();
-                    return $couponsBlock->render([]);
-                }
-                return $this->renderEmptyTab('coupons');
-
-            case 'credits':
-                if (class_exists(\Jankx\Extensions\UserCredits\Blocks\AccountTabCreditsBlock::class)) {
-                    $creditsBlock = new \Jankx\Extensions\UserCredits\Blocks\AccountTabCreditsBlock();
-                    return $creditsBlock->render([]);
-                }
-                return $this->renderEmptyTab('credits');
-
-            case 'profile':
-                $block = new AccountTabProfileBlock();
-                return $block->render([]);
-
-            case 'reviews':
-                if (class_exists(\Jankx\Extensions\ReviewSystem\Blocks\ReviewsPendingBlock::class)) {
-                    $pendingBlock = new \Jankx\Extensions\ReviewSystem\Blocks\ReviewsPendingBlock();
-                    $completedBlock = new \Jankx\Extensions\ReviewSystem\Blocks\ReviewsCompletedBlock();
-                    $myReviewsBlock = new \Jankx\Extensions\ReviewSystem\Blocks\ReviewsMyReviewsBlock();
-
-                    $output = '<div class="jankx-tab-panel jankx-tab-reviews">';
-                    $output .= $myReviewsBlock->render([]);
-                    $output .= $pendingBlock->render([]);
-                    $output .= $completedBlock->render([]);
-                    $output .= '</div>';
-                    return $output;
-                }
-                return $this->renderEmptyTab('reviews');
-
-            default:
-                // Tabs injected by other extensions through the sub-page API
-                // render via their registered callback when available.
-                $subPage = \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPage($tab);
-                if ($subPage && !empty($subPage['callback']) && is_callable($subPage['callback'])) {
-                    return call_user_func($subPage['callback'], wp_get_current_user());
-                }
-                return $this->renderEmptyTab($tab);
-        }
-    }
-
-    protected function renderEmptyTab(string $tab): string
-    {
-        return sprintf(
-            '<div class="jankx-tab-panel jankx-tab-%s"><p class="text-muted">%s</p></div>',
-            esc_attr($tab),
-            esc_html__('This feature is coming soon.', 'jankx')
-        );
     }
 }

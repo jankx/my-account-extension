@@ -25,6 +25,12 @@
 
   var PLACEHOLDER_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>';
 
+  var CONTENT_CHILDREN = [
+    'jankx/account-content-header',
+    'jankx/account-content-body',
+    'jankx/account-content-footer'
+  ];
+
   // Register blocks that lack editorScript in block.json.
   // Metadata is passed from PHP via wp_localize_script.
   var blockMetadata = window.jankxMyAccountBlockMetadata || {};
@@ -103,28 +109,40 @@
         };
       }
 
-      // jankx/account-content — server-side render preview
+      // jankx/account-content — container of header / body / footer
       if (name === 'jankx/account-content') {
         delete settings.parent;
         settings.ancestor = ['jankx/my-account'];
-        settings.edit = function (props) {
+        settings.edit = function () {
           var blockProps = useBlockProps({ className: 'jankx-account-content-editor' });
           return el('div', blockProps,
-            el(SSR, { block: 'jankx/account-content', attributes: props.attributes })
+            el(InnerBlocks, {
+              template: CONTENT_CHILDREN.map(function (child) {
+                return [child, {}];
+              }),
+              allowedBlocks: CONTENT_CHILDREN,
+              templateLock: false,
+              orientation: 'vertical'
+            })
           );
         };
-        settings.save = function () { return null; };
+        settings.save = function () {
+          return el(InnerBlocks.Content);
+        };
       }
 
-      // jankx/content-header — server-side render preview
-      if (name === 'jankx/content-header') {
+      // jankx/account-content-header|body|footer — server render + inner blocks
+      if (CONTENT_CHILDREN.indexOf(name) !== -1) {
         settings.edit = function (props) {
-          var blockProps = useBlockProps({ className: 'jankx-server-rendered' });
+          var blockProps = useBlockProps({ className: 'jankx-server-rendered ' + name.replace('jankx/', 'jankx-') + '-editor' });
           return el('div', blockProps,
-            el(SSR, { block: 'jankx/content-header', attributes: props.attributes })
+            el(SSR, { block: name, attributes: props.attributes }),
+            el(InnerBlocks, { templateLock: false, orientation: 'vertical' })
           );
         };
-        settings.save = function () { return null; };
+        settings.save = function () {
+          return el(InnerBlocks.Content);
+        };
       }
 
       // jankx/sidebar-header — group-like wrapper with overlay control
