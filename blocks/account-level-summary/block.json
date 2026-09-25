@@ -1,15 +1,17 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "jankx/sidebar-nav",
-    "title": "Sidebar Navigation",
+    "name": "jankx/account-level-summary",
+    "title": "Account Level Summary",
     "category": "jankx",
-    "icon": "menu",
-    "description": "Navigation menu for account tabs.",
+    "icon": "star-filled",
+    "description": "Displays the membership level summary card.",
     "textdomain": "jankx",
     "parent": ["jankx/account-sidebar"],
-    "allowedBlocks": ["jankx/account-menu-item"],
     "attributes": {
+        "showIcon": { "type": "boolean", "default": true },
+        "showName": { "type": "boolean", "default": true },
+        "showDescription": { "type": "boolean", "default": true },
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
         "jankxHideOnTablet": { "type": "boolean", "default": false },
@@ -17,6 +19,14 @@
         "jankxFlexGrow": { "type": "boolean", "default": false }
     },
     "supports": {
-        "html": false
+        "html": false,
+        "color": {
+            "background": true,
+            "text": true
+        },
+        "spacing": {
+            "padding": true,
+            "margin": true
+        }
     }
 }

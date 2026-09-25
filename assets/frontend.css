@@ -1530,3 +1530,36 @@
 .jankx-verify-success .jankx-verify-content p {
     color: #047857;
 }
+
+/* Sidebar Header - background overlay */
+.jankx-sidebar-header {
+    position: relative;
+}
+
+.jankx-sidebar-header.has-overlay {
+    overflow: hidden;
+}
+
+.jankx-sidebar-header__overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.jankx-sidebar-header__content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Account Level Summary */
+.jankx-account-level-summary {
+    padding: 16px 16px 0;
+}
+
+.jankx-account-level-summary .jankx-membership-badge {
+    margin: 0;
+}

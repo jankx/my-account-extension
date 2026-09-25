@@ -14,14 +14,31 @@ class SidebarHeaderBlock extends Block
         $user = wp_get_current_user();
         $showAvatar = $attributes['showAvatar'] ?? true;
         $showName = $attributes['showName'] ?? true;
-        $showMembershipBadge = $attributes['showMembershipBadge'] ?? true;
         $showEditLink = $attributes['showEditLink'] ?? true;
 
+        $overlayColor = isset($attributes['overlayColor']) && is_string($attributes['overlayColor'])
+            ? sanitize_hex_color($attributes['overlayColor'])
+            : '';
+        $overlayOpacity = isset($attributes['overlayOpacity']) && is_numeric($attributes['overlayOpacity'])
+            ? max(0, min(100, (int) $attributes['overlayOpacity']))
+            : 50;
+        $hasOverlay = $overlayColor !== '';
+
         $wrapperAttrs = get_block_wrapper_attributes([
-            'class' => 'jankx-sidebar-header',
+            'class' => 'jankx-sidebar-header' . ($hasOverlay ? ' has-overlay' : ''),
         ]);
 
         $output = sprintf('<div %s>', $wrapperAttrs);
+
+        if ($hasOverlay) {
+            $output .= sprintf(
+                '<span class="jankx-sidebar-header__overlay" style="background:%s;opacity:%s;" aria-hidden="true"></span>',
+                esc_attr($overlayColor),
+                esc_attr($overlayOpacity / 100)
+            );
+        }
+
+        $output .= '<div class="jankx-sidebar-header__content">';
 
         if ($showAvatar) {
             $avatarId = get_user_meta($user->ID, 'jankx_avatar_id', true);
@@ -44,36 +61,7 @@ class SidebarHeaderBlock extends Block
             );
         }
 
-        $output .= '</div>';
-
-        if ($showMembershipBadge) {
-            $output .= $this->renderMembershipBadge($user);
-        }
-
-        return $output;
-    }
-
-    protected function renderMembershipBadge($user): string
-    {
-        $levelSlug = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'bronze';
-
-        $levels = [
-            'bronze' => ['name' => 'Bronze', 'description' => 'New member. Accumulate points to upgrade.', 'color' => '#CD7F32'],
-            'silver' => ['name' => 'Silver', 'description' => 'Exclusive deals and offers just for you.', 'color' => '#94A3B8'],
-            'gold' => ['name' => 'Gold', 'description' => 'Premium benefits and VIP service.', 'color' => '#F59E0B'],
-        ];
-
-        $level = $levels[$levelSlug] ?? $levels['bronze'];
-
-        $output = '<div class="jankx-membership-badge" style="--badge-color:' . esc_attr($level['color']) . ';background:linear-gradient(135deg,' . esc_attr($level['color']) . '15,' . esc_attr($level['color']) . '05);border:1px solid ' . esc_attr($level['color']) . '30;border-radius:12px;padding:16px;margin-bottom:16px;">';
-        $output .= '<div style="display:flex;align-items:center;gap:12px;">';
-        $output .= '<div style="width:48px;height:48px;border-radius:50%;background:' . esc_attr($level['color']) . '20;display:flex;align-items:center;justify-content:center;color:' . esc_attr($level['color']) . ';">';
-        $output .= '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
-        $output .= '</div>';
-        $output .= '<div style="flex:1;">';
-        $output .= '<h3 style="margin:0;font-size:16px;font-weight:700;color:' . esc_attr($level['color']) . ';">' . esc_html($level['name']) . '</h3>';
-        $output .= '<p style="margin:4px 0 0;font-size:13px;color:#666;line-height:1.4;">' . esc_html($level['description']) . '</p>';
-        $output .= '</div></div></div>';
+        $output .= '</div></div>';
 
         return $output;
     }

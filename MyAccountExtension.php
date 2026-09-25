@@ -226,7 +226,11 @@ class MyAccountExtension extends AbstractExtension
             'my-account'      => \Jankx\Extensions\MyAccount\MyAccountBlock::class,
             'account-sidebar' => \Jankx\Extensions\MyAccount\AccountSidebarBlock::class,
             'sidebar-header'  => \Jankx\Extensions\MyAccount\SidebarHeaderBlock::class,
+            'account-level-summary' => \Jankx\Extensions\MyAccount\Blocks\AccountLevelSummaryBlock::class,
             'sidebar-nav'     => \Jankx\Extensions\MyAccount\SidebarNavBlock::class,
+            'account-menu-item' => \Jankx\Extensions\MyAccount\Blocks\AccountMenuItemBlock::class,
+            'account-menu-icon' => \Jankx\Extensions\MyAccount\Blocks\AccountMenuIconBlock::class,
+            'account-menu-text' => \Jankx\Extensions\MyAccount\Blocks\AccountMenuTextBlock::class,
             'account-content' => \Jankx\Extensions\MyAccount\AccountContentBlock::class,
             'content-header'  => \Jankx\Extensions\MyAccount\ContentHeaderBlock::class,
             'account-tab-profile' => \Jankx\Extensions\MyAccount\AccountTabProfileBlock::class,
@@ -545,7 +549,7 @@ class MyAccountExtension extends AbstractExtension
         wp_enqueue_script(
             'jankx-my-account-blocks-editor',
             $this->get_extension_url() . '/assets/blocks-editor.js',
-            ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-hooks'],
+            ['wp-blocks', 'wp-block-editor', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-hooks', 'wp-components'],
             filemtime($this->get_extension_path() . '/assets/blocks-editor.js'),
             true
         );
@@ -553,7 +557,16 @@ class MyAccountExtension extends AbstractExtension
         // Pass block metadata for blocks without editorScript so they can be
         // registered client-side and the blocks.registerBlockType filter fires.
         $blocksDir = $this->get_extension_path() . '/blocks';
-        $blockSlugs = ['account-content', 'sidebar-header', 'sidebar-nav', 'content-header'];
+        $blockSlugs = [
+            'account-content',
+            'sidebar-header',
+            'account-level-summary',
+            'sidebar-nav',
+            'account-menu-item',
+            'account-menu-icon',
+            'account-menu-text',
+            'content-header',
+        ];
         $blockMetadata = [];
         foreach ($blockSlugs as $slug) {
             $blockJson = $blocksDir . '/' . $slug . '/block.json';
@@ -565,6 +578,31 @@ class MyAccountExtension extends AbstractExtension
             }
         }
         wp_localize_script('jankx-my-account-blocks-editor', 'jankxMyAccountBlockMetadata', $blockMetadata);
+        wp_localize_script('jankx-my-account-blocks-editor', 'jankxMyAccountMenu', $this->getMenuForEditor());
+    }
+
+    /**
+     * Menu data shared with the editor so InnerBlocks templates can be built
+     * from the same sub-page registry the PHP renderers use.
+     */
+    protected function getMenuForEditor(): array
+    {
+        if (!class_exists(\Jankx\Extensions\MyAccount\Menu\AccountMenu::class)) {
+            return [];
+        }
+
+        $menu = [];
+        foreach (\Jankx\Extensions\MyAccount\Menu\AccountMenu::getEntries() as $entry) {
+            $menu[] = [
+                'slug' => $entry['slug'],
+                'label' => $entry['label'],
+                'icon' => $entry['icon'],
+                'url' => $entry['url'],
+                'active' => $entry['active'],
+            ];
+        }
+
+        return $menu;
     }
 
     /**

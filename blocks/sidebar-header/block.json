@@ -5,19 +5,66 @@
     "title": "Sidebar Header",
     "category": "jankx",
     "icon": "admin-users",
-    "description": "Displays user avatar, name and membership badge.",
+    "description": "Displays user avatar, name and edit profile link.",
     "textdomain": "jankx",
     "parent": ["jankx/account-sidebar"],
     "attributes": {
         "showAvatar": { "type": "boolean", "default": true },
         "showName": { "type": "boolean", "default": true },
-        "showMembershipBadge": { "type": "boolean", "default": true },
         "showEditLink": { "type": "boolean", "default": true },
+        "overlayColor": { "type": "string", "default": "" },
+        "overlayOpacity": { "type": "number", "default": 50 },
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
         "jankxHideOnTablet": { "type": "boolean", "default": false },
         "jankxHideOnMobile": { "type": "boolean", "default": false },
         "jankxFlexGrow": { "type": "boolean", "default": false }
     },
-    "supports": { "html": false }
+    "supports": {
+        "html": false,
+        "background": {
+            "backgroundImage": true,
+            "backgroundSize": true,
+            "gradient": true
+        },
+        "color": {
+            "background": true,
+            "text": true,
+            "gradients": true,
+            "__experimentalDefaultControls": {
+                "background": true,
+                "text": true
+            }
+        },
+        "__experimentalBorder": {
+            "color": true,
+            "radius": true,
+            "style": true,
+            "width": true,
+            "__experimentalDefaultControls": {
+                "color": true,
+                "radius": true,
+                "style": true,
+                "width": true
+            }
+        },
+        "spacing": {
+            "padding": true,
+            "margin": true,
+            "__experimentalDefaultControls": {
+                "padding": true
+            }
+        },
+        "typography": {
+            "fontSize": true,
+            "lineHeight": true,
+            "__experimentalFontFamily": true,
+            "__experimentalFontWeight": true,
+            "__experimentalFontStyle": true,
+            "__experimentalLetterSpacing": true,
+            "__experimentalDefaultControls": {
+                "fontSize": true
+            }
+        }
+    }
 }

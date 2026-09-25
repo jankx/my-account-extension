@@ -1,6 +1,8 @@
 <?php
 namespace Jankx\Extensions\MyAccount;
 
+use Jankx\Extensions\MyAccount\Menu\AccountMenu;
+
 class SidebarNavBlock extends Block
 {
     protected $blockId = 'jankx/sidebar-nav';
@@ -11,47 +13,38 @@ class SidebarNavBlock extends Block
             return '';
         }
 
-        $activeTab = get_query_var('jankx_account_page');
-        if (empty($activeTab)) {
-            $activeTab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
-        }
-
-        $subPages = $this->getSubPages();
-        $pageId = get_option('jankx_my_account_page_id', 0);
-        $accountUrl = $pageId ? get_permalink($pageId) : '#';
-
         $wrapperAttrs = get_block_wrapper_attributes([
             'class' => 'jankx-sidebar-nav',
         ]);
 
+        $hasInnerBlocks = $block instanceof \WP_Block
+            && !empty($block->parsed_block['innerBlocks']);
+
+        if ($hasInnerBlocks) {
+            return sprintf('<nav %s><ul class="jankx-nav-list">%s</ul></nav>', $wrapperAttrs, $content);
+        }
+
+        $entries = AccountMenu::getEntries();
+        if (empty($entries)) {
+            return '';
+        }
+
         $output = sprintf('<nav %s>', $wrapperAttrs);
         $output .= '<ul class="jankx-nav-list">';
 
-        foreach ($subPages as $slug => $page) {
-            if (empty($page['show_in_nav'])) continue;
+        foreach ($entries as $entry) {
+            $classes = 'jankx-nav-item' . ($entry['active'] ? ' jankx-nav-active' : '');
 
-            $url = rtrim($accountUrl, '/') . '/' . $slug . '/';
-            $isActive = $activeTab === $slug;
-            $activeClass = $isActive ? ' jankx-nav-active' : '';
-
-            $output .= '<li class="jankx-nav-item' . $activeClass . '">';
-            $output .= '<a href="' . esc_url($url) . '" class="jankx-nav-link">';
-            if (!empty($page['icon'])) {
-                $output .= '<span class="jankx-nav-icon">' . $page['icon'] . '</span>';
+            $output .= '<li class="' . esc_attr($classes) . '">';
+            $output .= '<a href="' . esc_url($entry['url']) . '" class="jankx-nav-link">';
+            if ($entry['icon'] !== '') {
+                $output .= '<span class="jankx-nav-icon">' . $entry['icon'] . '</span>';
             }
-            $output .= '<span class="jankx-nav-label">' . esc_html($page['label']) . '</span>';
+            $output .= '<span class="jankx-nav-label">' . esc_html($entry['label']) . '</span>';
             $output .= '</a></li>';
         }
 
         $output .= '</ul></nav>';
         return $output;
-    }
-
-    protected function getSubPages(): array
-    {
-        if (class_exists('\Jankx\Extensions\MyAccount\MyAccountExtension')) {
-            return \Jankx\Extensions\MyAccount\MyAccountExtension::getSubPages();
-        }
-        return [];
     }
 }

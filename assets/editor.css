@@ -731,3 +731,33 @@
         margin-top: 8px;
     }
 }
+
+/* Account Sidebar blocks - editor previews */
+.jankx-sidebar-nav-editor {
+    padding: 8px 0;
+}
+
+.jankx-sidebar-nav-editor .block-editor-block-list__block,
+.jankx-sidebar-nav-editor > .block-editor-inner-blocks .block-editor-block-list__block {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    max-width: 100% !important;
+}
+
+.wp-block-jankx-account-menu-item {
+    position: relative;
+}
+
+.wp-block-jankx-account-menu-icon,
+.wp-block-jankx-account-menu-text {
+    display: inline-flex;
+    align-items: center;
+}
+
+.jankx-server-rendered {
+    position: relative;
+}
+
+.jankx-overlay-control {
+    margin-bottom: 8px;
+}

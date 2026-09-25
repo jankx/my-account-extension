@@ -1,20 +1,27 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "jankx/sidebar-nav",
-    "title": "Sidebar Navigation",
+    "name": "jankx/account-menu-item",
+    "title": "Account Menu Item",
     "category": "jankx",
-    "icon": "menu",
-    "description": "Navigation menu for account tabs.",
+    "icon": "menu-alt",
+    "description": "A single account menu entry with icon and label.",
     "textdomain": "jankx",
-    "parent": ["jankx/account-sidebar"],
-    "allowedBlocks": ["jankx/account-menu-item"],
+    "parent": ["jankx/sidebar-nav"],
     "attributes": {
+        "slug": { "type": "string", "default": "" },
+        "label": { "type": "string", "default": "" },
+        "icon": { "type": "string", "default": "" },
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
         "jankxHideOnTablet": { "type": "boolean", "default": false },
         "jankxHideOnMobile": { "type": "boolean", "default": false },
         "jankxFlexGrow": { "type": "boolean", "default": false }
+    },
+    "providesContext": {
+        "jankx/menuSlug": "slug",
+        "jankx/menuLabel": "label",
+        "jankx/menuIcon": "icon"
     },
     "supports": {
         "html": false
