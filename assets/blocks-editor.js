@@ -31,6 +31,24 @@
     'jankx/account-content-footer'
   ];
 
+  function blockGapValue(attributes) {
+    var spacing = attributes && attributes.style && attributes.style.spacing;
+    var gap = spacing && spacing.blockGap;
+    if (!gap) {
+      return '';
+    }
+    if (Array.isArray(gap)) {
+      gap = gap.filter(Boolean).join(' ');
+    }
+    if (typeof gap !== 'string' || !gap) {
+      return '';
+    }
+    if (gap.indexOf('var:preset|spacing|') !== -1) {
+      gap = 'var(--wp--preset--spacing--' + gap.split('|').pop().toLowerCase() + ')';
+    }
+    return gap;
+  }
+
   // Register blocks that lack editorScript in block.json.
   // Metadata is passed from PHP via wp_localize_script.
   var blockMetadata = window.jankxMyAccountBlockMetadata || {};
@@ -224,11 +242,13 @@
           var menu = accountMenu.filter(function (item) {
             return item.slug === attributes.slug;
           })[0];
+          var gap = blockGapValue(attributes);
 
           return el('div', blockProps,
             el('a', {
               className: 'jankx-nav-link',
-              href: (menu && menu.url) || '#'
+              href: (menu && menu.url) || '#',
+              style: gap ? { gap: gap } : undefined
             },
               el(InnerBlocks, {
                 template: [

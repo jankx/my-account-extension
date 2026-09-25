@@ -35,11 +35,48 @@ class AccountMenuItemBlock extends Block
             $classes .= ' jankx-nav-active';
         }
 
+        $gap = $this->resolveBlockGap($attributes);
+        $linkAttrs = $gap !== '' ? sprintf(' style="gap:%s"', esc_attr($gap)) : '';
+
         return sprintf(
-            '<li class="%s"><a href="%s" class="jankx-nav-link">%s</a></li>',
+            '<li class="%s"><a href="%s" class="jankx-nav-link"%s>%s</a></li>',
             esc_attr($classes),
             esc_url($url),
+            $linkAttrs,
             $content
         );
+    }
+
+    protected function resolveBlockGap(array $attributes): string
+    {
+        $gap = $attributes['style']['spacing']['blockGap'] ?? null;
+        if (empty($gap)) {
+            return '';
+        }
+
+        $gap = wp_sanitize_block_gap_value($gap);
+        if (empty($gap)) {
+            return '';
+        }
+
+        if (is_array($gap)) {
+            $gap = implode(' ', array_values(array_filter(array_map(function ($value) {
+                return is_string($value) ? $this->resolveGapValue($value) : '';
+            }, $gap))));
+        } else {
+            $gap = $this->resolveGapValue($gap);
+        }
+
+        return $gap;
+    }
+
+    protected function resolveGapValue(string $value): string
+    {
+        if (str_contains($value, 'var:preset|spacing|')) {
+            $slug = substr($value, (int) strrpos($value, '|') + 1);
+            return 'var(--wp--preset--spacing--' . strtolower($slug) . ')';
+        }
+
+        return $value;
     }
 }

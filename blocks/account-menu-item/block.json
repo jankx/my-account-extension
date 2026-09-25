@@ -24,6 +24,17 @@
         "jankx/menuIcon": "icon"
     },
     "supports": {
-        "html": false
+        "html": false,
+        "layout": {
+            "allowSwitching": false,
+            "allowInheriting": false,
+            "default": { "type": "flex" }
+        },
+        "spacing": {
+            "blockGap": true,
+            "margin": true,
+            "padding": true,
+            "__experimentalDefaultControls": { "blockGap": true }
+        }
     }
 }

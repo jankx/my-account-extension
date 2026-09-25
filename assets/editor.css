@@ -217,7 +217,6 @@
 .jankx-nav-item {
     display: flex;
     align-items: center;
-    gap: 12px;
     padding: 12px 20px;
     color: var(--jankx-gray-600);
     text-decoration: none;
@@ -225,6 +224,17 @@
     font-weight: 500;
     transition: all 0.2s;
     border-left: 3px solid transparent;
+}
+
+:where(.jankx-nav-item) {
+    gap: 12px;
+}
+
+.jankx-nav-item .jankx-nav-link {
+    display: flex;
+    align-items: center;
+    gap: inherit;
+    flex: 1;
 }
 
 .jankx-nav-item:hover {
