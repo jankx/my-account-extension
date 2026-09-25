@@ -37,6 +37,12 @@ class AccountTabOverviewBlock extends Block
 
         $output = sprintf('<div %s>', $wrapperAttrs);
 
+        // Unhook the default OverviewTab renderers to avoid duplication,
+        // because this block provides its own rendering for these sections.
+        remove_action('jankx/my_account/overview/membership', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderMembership']);
+        remove_action('jankx/my_account/overview/quick_links', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderQuickLinks']);
+        remove_action('jankx/my_account/overview/qa', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderQA']);
+
         // ── Top section ──
         $output .= '<div class="jankx-overview-section jankx-overview-top">';
         ob_start();
