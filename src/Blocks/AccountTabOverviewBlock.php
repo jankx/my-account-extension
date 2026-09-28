@@ -43,12 +43,13 @@ class AccountTabOverviewBlock extends Block
         remove_action('jankx/my_account/overview/quick_links', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderQuickLinks']);
         remove_action('jankx/my_account/overview/qa', ['\Jankx\Extensions\MyAccount\Shortcode\OverviewTab', 'renderQA']);
 
-        // ── Top section ──
-        $output .= '<div class="jankx-overview-section jankx-overview-top">';
+        // ── Top section (only when the hook outputs something) ──
         ob_start();
         do_action('jankx/my_account/overview/top', $user);
-        $output .= ob_get_clean();
-        $output .= '</div>';
+        $topContent = ob_get_clean();
+        if (trim($topContent) !== '') {
+            $output .= '<div class="jankx-overview-section jankx-overview-top">' . $topContent . '</div>';
+        }
 
         // ── Membership section ──
         $output .= '<div class="jankx-overview-section jankx-overview-membership">';
@@ -86,12 +87,13 @@ class AccountTabOverviewBlock extends Block
             $output .= '</div>';
         }
 
-        // ── Bottom section ──
-        $output .= '<div class="jankx-overview-section jankx-overview-bottom">';
+        // ── Bottom section (only when the hook outputs something) ──
         ob_start();
         do_action('jankx/my_account/overview/bottom', $user);
-        $output .= ob_get_clean();
-        $output .= '</div>';
+        $bottomContent = ob_get_clean();
+        if (trim($bottomContent) !== '') {
+            $output .= '<div class="jankx-overview-section jankx-overview-bottom">' . $bottomContent . '</div>';
+        }
 
         $output .= '</div>';
 
