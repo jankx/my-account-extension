@@ -1017,6 +1017,16 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+a.jankx-od-item-thumb {
+    text-decoration: none;
+}
+a.jankx-od-item-name {
+    text-decoration: none;
+}
+a.jankx-od-item-name:hover {
+    color: var(--jankx-primary);
+    text-decoration: underline;
+}
 .jankx-od-item-meta {
     font-size: 12px;
     color: var(--jankx-gray-400);
