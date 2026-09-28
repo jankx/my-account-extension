@@ -226,7 +226,6 @@ class MyAccountExtension extends AbstractExtension
             'my-account'      => \Jankx\Extensions\MyAccount\MyAccountBlock::class,
             'account-sidebar' => \Jankx\Extensions\MyAccount\AccountSidebarBlock::class,
             'sidebar-header'  => \Jankx\Extensions\MyAccount\SidebarHeaderBlock::class,
-            'account-level-summary' => \Jankx\Extensions\MyAccount\Blocks\AccountLevelSummaryBlock::class,
             'sidebar-nav'     => \Jankx\Extensions\MyAccount\SidebarNavBlock::class,
             'account-menu-item' => \Jankx\Extensions\MyAccount\Blocks\AccountMenuItemBlock::class,
             'account-menu-icon' => \Jankx\Extensions\MyAccount\Blocks\AccountMenuIconBlock::class,
