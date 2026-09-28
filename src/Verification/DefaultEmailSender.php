@@ -29,7 +29,12 @@ class DefaultEmailSender implements EmailSenderInterface
             sprintf('From: %s <%s>', $siteName, get_option('admin_email')),
         ];
 
-        return wp_mail($to, $subject, $message, $headers);
+        try {
+            return wp_mail($to, $subject, $message, $headers);
+        } catch (\Throwable $e) {
+            error_log('Jankx MyAccount EmailVerification Error: ' . $e->getMessage());
+            return false;
+        }
     }
 
     private function renderEmailTemplate(array $data): string
