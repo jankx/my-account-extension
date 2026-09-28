@@ -277,14 +277,6 @@
     text-align: center;
 }
 
-/* Main Content */
-.jankx-account-content {
-    background: #fff;
-    border-radius: var(--jankx-radius);
-    box-shadow: var(--jankx-shadow);
-    padding: 32px;
-}
-
 .jankx-account-content-editor {
     background: transparent;
     border-radius: 0;
@@ -709,11 +701,7 @@
 
     .jankx-nav-item {
         padding: 10px 16px;
-    }
-
-    .jankx-account-content {
-        padding: 24px;
-    }
+    }=
 }
 
 @media screen and (max-width: 600px) {
