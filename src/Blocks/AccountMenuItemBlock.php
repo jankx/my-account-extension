@@ -30,6 +30,12 @@ class AccountMenuItemBlock extends Block
                 . ($label !== '' ? '<span class="jankx-nav-label">' . esc_html($label) . '</span>' : '');
         }
 
+        $info = (string) ($attributes['info'] ?? '');
+        $info = apply_filters('jankx/my-account/menu-item/info', $info, $slug, $attributes);
+        if ($info !== '') {
+            $content .= sprintf('<span class="jankx-nav-info">%s</span>', wp_kses_post($info));
+        }
+
         $classes = 'jankx-nav-item';
         if ($entry && $entry['active']) {
             $classes .= ' jankx-nav-active';

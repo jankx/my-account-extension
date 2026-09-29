@@ -12,6 +12,7 @@
         "slug": { "type": "string", "default": "" },
         "label": { "type": "string", "default": "" },
         "icon": { "type": "string", "default": "" },
+        "info": { "type": "string", "default": "" },
         "jankxHideOnUltrawide": { "type": "boolean", "default": false },
         "jankxHideOnPc": { "type": "boolean", "default": false },
         "jankxHideOnTablet": { "type": "boolean", "default": false },

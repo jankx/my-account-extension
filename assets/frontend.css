@@ -228,6 +228,14 @@
     text-align: center;
 }
 
+.jankx-nav-info {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--jankx-gray-400);
+    white-space: nowrap;
+}
+
 
 
 .jankx-section-title {
