@@ -85,7 +85,7 @@ class OverviewTab
      */
     public static function renderMembership($user): void
     {
-        $level = get_user_meta($user->ID, 'jankx_user_level', true) ?: 'bronze';
+        $level = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'bronze';
 
         $levels = [
             'bronze' => [

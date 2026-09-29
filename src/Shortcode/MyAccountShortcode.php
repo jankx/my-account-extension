@@ -124,8 +124,8 @@ class MyAccountShortcode
 
     protected function renderMembershipBadge($user): void
     {
-        $userLevel = get_user_meta($user->ID, 'jankx_user_level', true) ?: 'bronze';
-        
+        $userLevel = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'bronze';
+
         $levels = [
             'bronze' => [
                 'name' => 'Bronze',
@@ -145,7 +145,29 @@ class MyAccountShortcode
                 'color' => '#F59E0B',
                 'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
             ],
+            'diamond' => [
+                'name' => 'Diamond',
+                'description' => 'Top tier member.',
+                'color' => '#B9F2FF',
+                'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>',
+            ],
         ];
+
+        // Prefer the membership-levels extension data when it is active.
+        if (class_exists('\Jankx\Extensions\MembershipLevels\MembershipLevelsExtension')) {
+            $instance = \Jankx\Extensions\MembershipLevels\MembershipLevelsExtension::get_instance();
+            if ($instance) {
+                $userLevel = $instance->getUserLevel($user->ID);
+            }
+            foreach (\Jankx\Extensions\MembershipLevels\MembershipLevelsExtension::getLevels() as $slug => $lv) {
+                if (!isset($levels[$slug])) {
+                    $levels[$slug] = ['name' => $slug, 'description' => '', 'color' => '#65A30D', 'icon' => $levels['bronze']['icon']];
+                }
+                $levels[$slug]['name'] = $lv['name'] ?? $levels[$slug]['name'];
+                $levels[$slug]['description'] = $lv['description'] ?? '';
+                $levels[$slug]['color'] = $lv['color'] ?? $levels[$slug]['color'];
+            }
+        }
 
         $level = $levels[$userLevel] ?? $levels['bronze'];
         ?>

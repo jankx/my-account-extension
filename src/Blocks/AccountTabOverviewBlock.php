@@ -54,7 +54,11 @@ class AccountTabOverviewBlock extends Block
         // ── Membership section ──
         $output .= '<div class="jankx-overview-section jankx-overview-membership">';
         $output .= '<h3 class="jankx-overview-section-title">' . esc_html__('Hạng thành viên', 'jankx') . '</h3>';
-        $output .= $this->renderMembership($user);
+        // The membership-levels extension provides the level switcher via the
+        // action below; only fall back to the legacy card when it is inactive.
+        if (!class_exists('\Jankx\Extensions\MembershipLevels\MembershipLevelsExtension')) {
+            $output .= $this->renderMembership($user);
+        }
         ob_start();
         do_action('jankx/my_account/overview/membership', $user);
         $output .= ob_get_clean();
@@ -102,7 +106,7 @@ class AccountTabOverviewBlock extends Block
 
     protected function renderMembership($user): string
     {
-        $level = get_user_meta($user->ID, 'jankx_user_level', true) ?: 'bronze';
+        $level = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'bronze';
         $points = (int) get_user_meta($user->ID, 'jankx_points', true);
 
         $levels = [
