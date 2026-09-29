@@ -124,30 +124,24 @@ class MyAccountShortcode
 
     protected function renderMembershipBadge($user): void
     {
-        $userLevel = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'bronze';
+        $userLevel = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'silver';
 
         $levels = [
-            'bronze' => [
-                'name' => 'Bronze',
-                'description' => 'New member. Accumulate points to upgrade.',
-                'color' => '#CD7F32',
-                'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
-            ],
             'silver' => [
-                'name' => 'Silver',
-                'description' => 'Exclusive deals and offers just for you.',
-                'color' => '#65A30D',
+                'name' => 'Bạc',
+                'description' => 'Thành viên Bạc.',
+                'color' => '#C0C0C0',
                 'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
             ],
             'gold' => [
-                'name' => 'Gold',
-                'description' => 'Premium benefits and VIP service.',
-                'color' => '#F59E0B',
+                'name' => 'Vàng',
+                'description' => 'Thành viên Vàng.',
+                'color' => '#FFD700',
                 'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
             ],
-            'diamond' => [
-                'name' => 'Diamond',
-                'description' => 'Top tier member.',
+            'platinum' => [
+                'name' => 'Bạch kim',
+                'description' => 'Thành viên Bạch kim.',
                 'color' => '#B9F2FF',
                 'icon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>',
             ],
@@ -161,7 +155,7 @@ class MyAccountShortcode
             }
             foreach (\Jankx\Extensions\MembershipLevels\MembershipLevelsExtension::getLevels() as $slug => $lv) {
                 if (!isset($levels[$slug])) {
-                    $levels[$slug] = ['name' => $slug, 'description' => '', 'color' => '#65A30D', 'icon' => $levels['bronze']['icon']];
+                    $levels[$slug] = ['name' => $slug, 'description' => '', 'color' => '#65A30D', 'icon' => $levels['silver']['icon']];
                 }
                 $levels[$slug]['name'] = $lv['name'] ?? $levels[$slug]['name'];
                 $levels[$slug]['description'] = $lv['description'] ?? '';
@@ -169,7 +163,7 @@ class MyAccountShortcode
             }
         }
 
-        $level = $levels[$userLevel] ?? $levels['bronze'];
+        $level = $levels[$userLevel] ?? $levels[array_key_first($levels)];
         ?>
         <div class="jankx-membership-badge" style="--badge-color: <?php echo esc_attr($level['color']); ?>">
             <div class="jankx-badge-icon">

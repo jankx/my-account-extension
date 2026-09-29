@@ -39,13 +39,7 @@
         },
 
         initLevelSwitch: function() {
-            document.addEventListener('click', function(e) {
-                const chip = e.target.closest('.jankx-level-switch__chip');
-                if (!chip) return;
-
-                const root = chip.closest('[data-jankx-level-switch]');
-                if (!root) return;
-
+            const activate = function(root, chip) {
                 const slug = chip.dataset.level;
 
                 root.querySelectorAll('.jankx-level-switch__chip').forEach(function(c) {
@@ -59,6 +53,23 @@
                     pane.classList.toggle('is-active', on);
                     pane.hidden = !on;
                 });
+            };
+
+            document.querySelectorAll('[data-jankx-level-switch]').forEach(function(root) {
+                root.querySelectorAll('.jankx-level-switch__chip').forEach(function(chip) {
+                    chip.addEventListener('click', function() {
+                        activate(root, chip);
+                    });
+                });
+            });
+
+            // Fallback for markup rendered after page load.
+            document.addEventListener('click', function(e) {
+                const chip = e.target && e.target.closest ? e.target.closest('.jankx-level-switch__chip') : null;
+                if (!chip) return;
+                const root = chip.closest('[data-jankx-level-switch]');
+                if (!root) return;
+                activate(root, chip);
             });
         },
 

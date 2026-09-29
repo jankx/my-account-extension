@@ -647,14 +647,14 @@ class MyAccountExtension extends AbstractExtension
             'jankx-my-account',
             $this->get_extension_url() . '/assets/frontend.css',
             [],
-            '1.0.0'
+            filemtime($this->get_extension_path() . '/assets/frontend.css')
         );
 
         wp_enqueue_script(
             'jankx-my-account',
             $this->get_extension_url() . '/assets/frontend.js',
             ['jquery'],
-            '1.0.0',
+            filemtime($this->get_extension_path() . '/assets/frontend.js'),
             true
         );
 

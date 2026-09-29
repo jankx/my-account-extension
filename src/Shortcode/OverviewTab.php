@@ -85,33 +85,33 @@ class OverviewTab
      */
     public static function renderMembership($user): void
     {
-        $level = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'bronze';
+        $level = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'silver';
 
         $levels = [
-            'bronze' => [
-                'name' => 'Bronze',
-                'points' => 0,
-                'next' => 'Silver',
-                'next_points' => 500,
-                'color' => '#CD7F32',
-            ],
             'silver' => [
-                'name' => 'Silver',
-                'points' => 500,
-                'next' => 'Gold',
+                'name' => 'Bạc',
+                'points' => 0,
+                'next' => 'Vàng',
                 'next_points' => 2000,
-                'color' => '#65A30D',
+                'color' => '#C0C0C0',
             ],
             'gold' => [
-                'name' => 'Gold',
+                'name' => 'Vàng',
                 'points' => 2000,
+                'next' => 'Bạch kim',
+                'next_points' => 5000,
+                'color' => '#FFD700',
+            ],
+            'platinum' => [
+                'name' => 'Bạch kim',
+                'points' => 5000,
                 'next' => null,
                 'next_points' => null,
-                'color' => '#F59E0B',
+                'color' => '#B9F2FF',
             ],
         ];
 
-        $current = $levels[$level] ?? $levels['bronze'];
+        $current = $levels[$level] ?? $levels[array_key_first($levels)];
         $points = (int) get_user_meta($user->ID, 'jankx_points', true);
         $progress = 0;
 

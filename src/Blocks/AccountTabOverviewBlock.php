@@ -106,25 +106,25 @@ class AccountTabOverviewBlock extends Block
 
     protected function renderMembership($user): string
     {
-        $level = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'bronze';
+        $level = get_user_meta($user->ID, 'jankx_membership_level', true) ?: 'silver';
         $points = (int) get_user_meta($user->ID, 'jankx_points', true);
 
         $levels = [
-            'bronze' => [
-                'name' => 'Bronze', 'points' => 0,
-                'next' => 'Silver', 'next_points' => 500, 'color' => '#CD7F32',
-            ],
             'silver' => [
-                'name' => 'Silver', 'points' => 500,
-                'next' => 'Gold', 'next_points' => 2000, 'color' => '#65A30D',
+                'name' => 'Bạc', 'points' => 0,
+                'next' => 'Vàng', 'next_points' => 2000, 'color' => '#C0C0C0',
             ],
             'gold' => [
-                'name' => 'Gold', 'points' => 2000,
-                'next' => null, 'next_points' => null, 'color' => '#F59E0B',
+                'name' => 'Vàng', 'points' => 2000,
+                'next' => 'Bạch kim', 'next_points' => 5000, 'color' => '#FFD700',
+            ],
+            'platinum' => [
+                'name' => 'Bạch kim', 'points' => 5000,
+                'next' => null, 'next_points' => null, 'color' => '#B9F2FF',
             ],
         ];
 
-        $current = $levels[$level] ?? $levels['bronze'];
+        $current = $levels[$level] ?? $levels[array_key_first($levels)];
         $progress = 0;
         if ($current['next'] && $current['next_points'] > $current['points']) {
             $progress = min(100, ($points - $current['points']) / ($current['next_points'] - $current['points']) * 100);
