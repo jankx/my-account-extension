@@ -8,6 +8,7 @@
         init: function() {
             this.bindEvents();
             this.initTabs();
+            this.initLevelSwitch();
         },
 
         bindEvents: function() {
@@ -35,6 +36,41 @@
             // Highlight active nav item
             const activeTab = new URLSearchParams(window.location.search).get('tab') || 'profile';
             $(`.jankx-nav-item[data-tab="${activeTab}"]`).addClass('jankx-nav-active');
+        },
+
+        initLevelSwitch: function() {
+            const activate = function(root, card) {
+                const slug = card.dataset.level;
+
+                root.querySelectorAll('.jankx-level-card').forEach(function(c) {
+                    const on = c === card;
+                    c.classList.toggle('is-active', on);
+                    c.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+
+                root.querySelectorAll('.jankx-level-detail').forEach(function(pane) {
+                    const on = pane.dataset.level === slug;
+                    pane.classList.toggle('is-active', on);
+                    pane.hidden = !on;
+                });
+            };
+
+            document.querySelectorAll('[data-jankx-level-switch]').forEach(function(root) {
+                root.querySelectorAll('.jankx-level-card').forEach(function(card) {
+                    card.addEventListener('click', function() {
+                        activate(root, card);
+                    });
+                });
+            });
+
+            // Fallback for markup rendered after page load.
+            document.addEventListener('click', function(e) {
+                const card = e.target && e.target.closest ? e.target.closest('.jankx-level-card') : null;
+                if (!card) return;
+                const root = card.closest('[data-jankx-level-switch]');
+                if (!root) return;
+                activate(root, card);
+            });
         },
 
         handleProfileSubmit: function(e) {
