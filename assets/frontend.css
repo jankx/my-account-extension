@@ -332,17 +332,30 @@
 }
 
 .jankx-level-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-    align-items: stretch;
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.jankx-level-cards::-webkit-scrollbar {
+    height: 6px;
+}
+
+.jankx-level-cards::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 3px;
 }
 
 .jankx-level-card {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 100%;
+    flex: 0 0 auto;
+    width: 300px;
+    scroll-snap-align: start;
     text-align: left;
     font-family: inherit;
     background: var(--jankx-gray-50, #f8fafc);
@@ -737,6 +750,11 @@
 @media (max-width: 600px) {
     .jankx-level-benefits {
         grid-template-columns: 1fr;
+    }
+
+    .jankx-level-card {
+        width: 85vw;
+        max-width: 300px;
     }
 
     .jankx-level-detail {
