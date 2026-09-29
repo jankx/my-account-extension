@@ -186,6 +186,7 @@
     display: flex;
     align-items: center;
     gap: inherit;
+    width: 100%;
 }
 
 .jankx-nav-item:hover {
@@ -229,7 +230,9 @@
 }
 
 .jankx-nav-info {
-    margin-left: auto;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
     font-size: 12px;
     font-weight: 600;
     color: var(--jankx-gray-400);
