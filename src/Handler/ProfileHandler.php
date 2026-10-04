@@ -17,7 +17,8 @@ class ProfileHandler
 
     public function handleFormSubmission(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        // REQUEST_METHOD is undefined when wp-cron runs from the CLI.
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
             return;
         }
 
