@@ -14,6 +14,13 @@ class AccountMenuIconBlock extends Block
             return '';
         }
 
+        // An override block was dropped in (SVG Icon / Icon Picker /
+        // Advanced Image) — it wins over the sub-page registry artwork.
+        $inner = trim((string) $content);
+        if ($inner !== '') {
+            return '<span class="jankx-nav-icon">' . $inner . '</span>';
+        }
+
         $context = ($block instanceof \WP_Block && is_array($block->context)) ? $block->context : [];
 
         $slug = isset($context['jankx/menuSlug']) ? (string) $context['jankx/menuSlug'] : '';

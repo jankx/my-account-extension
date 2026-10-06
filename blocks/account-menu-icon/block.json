@@ -5,7 +5,7 @@
     "title": "Account Menu Icon",
     "category": "jankx",
     "icon": "format-image",
-    "description": "Renders the icon of the parent account menu item.",
+    "description": "Renders the icon of the parent account menu item. Drop an SVG Icon / Icon Picker / Advanced Image inside to override it.",
     "textdomain": "jankx",
     "parent": ["jankx/account-menu-item"],
     "usesContext": ["jankx/menuSlug", "jankx/menuIcon"],

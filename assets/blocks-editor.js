@@ -16,6 +16,7 @@
   var InspectorControls = wp.blockEditor.InspectorControls;
   var Fragment    = wp.element.Fragment;
   var select      = wp.data.select;
+  var useSelect   = wp.data.useSelect;
   var SSR         = wp.serverSideRender;
   var el          = wp.element.createElement;
   var PanelBody   = wp.components.PanelBody;
@@ -24,6 +25,14 @@
   var __          = wp.i18n.__;
 
   var PLACEHOLDER_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>';
+
+  // Same override set as jankx/level-summary-icon: drop any of these into the
+  // icon slot to replace the menu's built-in artwork.
+  var ALLOWED_ICON_BLOCKS = [
+    'jankx/svg-icon',
+    'jankx/icon-picker',
+    'jankx/advanced-image-box'
+  ];
 
   var CONTENT_CHILDREN = [
     'jankx/account-content-header',
@@ -268,16 +277,54 @@
         };
       }
 
-      // jankx/account-menu-icon — icon resolved from block context
+      // jankx/account-menu-icon — default icon comes from the parent's
+      // `icon` attribute (registry icon written at template insertion).
+      // Dropping an SVG Icon / Icon Picker / Advanced Image inside overrides it.
       if (name === 'jankx/account-menu-icon') {
         settings.edit = function (props) {
           var blockProps = useBlockProps({ className: 'jankx-nav-icon' });
+          var hasInnerBlock = useSelect(
+            function (storeSelect) {
+              var blocks = storeSelect('core/block-editor').getBlocks(props.clientId);
+              return !!blocks && blocks.length > 0;
+            },
+            [props.clientId]
+          );
           var icon = (props.context && props.context['jankx/menuIcon']) || PLACEHOLDER_ICON;
-          return el('span', Object.assign({}, blockProps, {
-            dangerouslySetInnerHTML: { __html: icon }
-          }));
+          var appender = el(InnerBlocks, {
+            allowedBlocks: ALLOWED_ICON_BLOCKS,
+            templateLock: false,
+            renderAppender: InnerBlocks.ButtonBlockAppender
+          });
+
+          if (hasInnerBlock) {
+            return el('span', blockProps, appender);
+          }
+
+          // Empty slot: keep showing the default icon and layer the inserter on
+          // top of it, so the first block dropped in replaces the artwork.
+          var emptyProps = Object.assign({}, blockProps, {
+            style: Object.assign({}, blockProps.style, { position: 'relative' })
+          });
+
+          return el('span', emptyProps,
+            el('span', { dangerouslySetInnerHTML: { __html: icon } }),
+            el('div', {
+              style: {
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }
+            }, appender)
+          );
         };
-        settings.save = function () { return null; };
+        // Must serialize inner blocks: save() returning null empties
+        // getSaveElement() and the nested icon block is lost on save.
+        settings.save = function () {
+          return el(InnerBlocks.Content);
+        };
       }
 
       // jankx/account-menu-text — label resolved from block context
