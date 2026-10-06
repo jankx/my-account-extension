@@ -204,16 +204,18 @@
         settings.save = function () { return null; };
       }
 
-      // jankx/account-level-summary — server-side render preview
-      if (name === 'jankx/account-level-summary') {
-        settings.edit = function (props) {
-          var blockProps = useBlockProps({ className: 'jankx-server-rendered' });
-          return el('div', blockProps,
-            el(SSR, { block: 'jankx/account-level-summary', attributes: props.attributes })
-          );
-        };
-        settings.save = function () { return null; };
-      }
+      // jankx/account-level-summary: CỐ TÌNH không override ở đây.
+      //
+      // Nó là container của 3 inner block (level-summary-icon / -name /
+      // -description) và đã tự khai InnerBlocks + template trong
+      // membership-levels/blocks/account-level-summary. Override edit bằng
+      // SSR preview và save = null ở đây đã làm mất cả hai: author không thấy
+      // vùng thả inner block, và inner block không được ghi vào post_content
+      // (dynamic block mà save = null thì không lưu gì cả) → markup chỉ còn
+      // <!-- wp:jankx/account-level-summary /-->.
+      //
+      // Cần preview server-side thì dùng ClientSideRender bên trong edit của
+      // chính block, đừng thay edit ở filter này.
 
       // jankx/sidebar-nav — InnerBlocks container of account menu items
       if (name === 'jankx/sidebar-nav') {
